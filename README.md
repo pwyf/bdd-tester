@@ -1,6 +1,6 @@
 # BDD IATI Tester
 
-Test IATI data using behaviour-driven development testing.
+Assess IATI data using [behaviour-driven development](https://en.wikipedia.org/wiki/Behavior-driven_development) testing.
 
 # Install
 
@@ -15,3 +15,7 @@ pip install -r requirements.txt
 ```shell
 python runner.py [IATI XML File]
 ```
+
+# Tell me more
+
+This project is really just a wrapper around [Behave](https://pythonhosted.org/behave/) – a python version of [Cucumber](https://cucumber.io). Tests (features) are described in [the Gherkin language](http://pythonhosted.org/behave/philosophy.html#the-gherkin-language).
