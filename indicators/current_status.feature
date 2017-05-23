@@ -6,4 +6,4 @@ Feature: Current status
 
   Scenario Outline: Current status is valid
     Given the activity is current
-     then every `activity-status` should be on the ActivityStatus codelist
+     then every `activity-status/@code` should be on the ActivityStatus codelist
