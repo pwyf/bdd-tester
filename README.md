@@ -16,10 +16,10 @@ pip install -r requirements.txt
 bdd_tester [IATI XML File]
 ```
 
-…or just run tests for one indicator e.g.
+…or just run a single feature file e.g.
 
 ```shell
-bdd_tester [IATI XML File] indicators/aid_type.feature
+bdd_tester [IATI XML File] features/pwyf_2017/aid_type.feature
 ```
 
 There’s also a bunch of extra settings provided by `behave` here. See:
