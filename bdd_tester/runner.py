@@ -1,5 +1,3 @@
-import sys
-
 from behave.configuration import Configuration
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
@@ -94,6 +92,3 @@ def main(args=[]):
                                       colored=config.color)
 
     return 1 if failed else 0
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))

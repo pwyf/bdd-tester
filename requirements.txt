@@ -1,3 +1,4 @@
+-e .
 behave==1.2.5
 lxml==3.7.1
 requests

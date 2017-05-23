@@ -7,25 +7,23 @@ This project is really just a wrapper around [Behave](https://pythonhosted.org/b
 # Install
 
 ```shell
-pyvenv .ve
-source .ve/bin/activate
 pip install -r requirements.txt
 ```
 
 # Run
 
 ```shell
-python runner.py [IATI XML File]
+bdd_tester [IATI XML File]
 ```
 
 …or just run tests for one indicator e.g.
 
 ```shell
-python runner.py [IATI XML File] indicators/aid_type.feature
+bdd_tester [IATI XML File] indicators/aid_type.feature
 ```
 
 There’s also a bunch of extra settings provided by `behave` here. See:
 
 ```shell
-python runner.py --help
+bdd_tester --help
 ```
