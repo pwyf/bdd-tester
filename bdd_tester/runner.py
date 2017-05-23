@@ -56,19 +56,23 @@ class DQRunner(Runner):
         return self.run_model()
 
 def main(args=[]):
-    config = Configuration(args)
-    if not config.format:
-        config.format = [config.default_format]
+    if len(args) > 0 and len(args[0]) > 0 and args[0][0] != '-':
+        filepath = args.pop(0)
+    else:
+        filepath = None
 
     # hack. We use the existing arg parser, then
     # attempt to extract the XML file from the
     # parsed args.
 
     # eventually we can add our own arg parser here.
-    if config.paths == []:
+    config = Configuration(args)
+    if not config.format:
+        config.format = [config.default_format]
+
+    if not filepath:
         print('Please provide an XML file to test')
         return 1
-    filepath = config.paths.pop(0)
 
     try:
         doc = etree.parse(filepath)
