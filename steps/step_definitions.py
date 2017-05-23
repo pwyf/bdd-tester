@@ -3,8 +3,6 @@ import json
 from os.path import join
 import re
 
-from behave import *
-
 
 @given('an organisation file')
 def step_impl(context):
