@@ -8,14 +8,14 @@ import re
 def step_impl(context):
     assert(context.filetype == 'org')
 
+# NB the original PWYF test also checked non-empty
 @then('`{xpath_expression}` should be present')
 def step_impl(context, xpath_expression):
     vals = context.xml.xpath(xpath_expression)
-    for val in vals:
-        if val != '':
-            assert(True)
-            return
-    assert(False)
+    if len(vals) > 0:
+        assert(True)
+    else:
+        assert(False)
 
 @then('every `{xpath_expression}` should be on the {codelist} codelist')
 def step_impl(context, xpath_expression, codelist):
