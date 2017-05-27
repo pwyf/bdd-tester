@@ -1,4 +1,4 @@
-Feature: Budget identifier
+Feature: Capital spend
 
   Scenario Outline: Capital spend is present
     Given the activity is current
