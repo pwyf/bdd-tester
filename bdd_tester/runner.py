@@ -7,9 +7,44 @@ from lxml import etree
 
 
 class DQRunner(Runner):
+    def __init__(self, args=[]):
+        # hack. We use the existing arg parser, then
+        # attempt to extract the XML file from the
+        # parsed args.
+
+        # eventually we can add our own arg parser here.
+        config = Configuration(args)
+        if not config.format:
+            config.format = [config.default_format]
+
+        super(DQRunner, self).__init__(config)
+
+    def run_file(self, filepath):
+        if not filepath:
+            raise Exception('Please provide an XML file to test')
+
+        try:
+            doc = etree.parse(filepath)
+        except OSError:
+            raise Exception('{} is not a valid XML file'.format(filepath))
+        except etree.XMLSyntaxError as e:
+            raise Exception('Failed trying to parse {}'.format(filepath))
+        self.context = Context(self)
+        self.context.doc = doc
+
+        failed = self.run()
+
+        if self.config.show_snippets and self.undefined_steps:
+            print_undefined_step_snippets(self.undefined_steps,
+                                          colored=self.config.color)
+
+        if failed:
+            raise Exception
+
+        return self.context.score
+
     def run_with_paths(self):
 
-        self.context = Context(self)
         self.load_hooks()
         self.load_step_definitions()
 
@@ -22,7 +57,7 @@ class DQRunner(Runner):
                                     if not self.config.exclude(filename) ]
         features = parse_features(feature_locations, language=self.config.lang)
 
-        doc = self.context.config.userdata['doc']
+        doc = self.context.doc
         organisations = doc.xpath('//iati-organisation')
         if len(organisations) > 0:
             self.context.filetype = 'org'
@@ -61,38 +96,11 @@ def main(args=[]):
     else:
         filepath = None
 
-    # hack. We use the existing arg parser, then
-    # attempt to extract the XML file from the
-    # parsed args.
-
-    # eventually we can add our own arg parser here.
-    config = Configuration(args)
-    if not config.format:
-        config.format = [config.default_format]
-
-    if not filepath:
-        print('Please provide an XML file to test')
-        return 1
-
+    runner = DQRunner(args)
+    failed = False
     try:
-        doc = etree.parse(filepath)
-    except OSError:
-        print('{} is not a valid XML file'.format(filepath))
-        return 1
-    except etree.XMLSyntaxError as e:
-        print('Failed trying to parse {}'.format(filepath))
-        print('\n  ' + str(e))
-        return 1
-
-    config.userdata = {
-        'doc': doc,
-    }
-
-    runner = DQRunner(config)
-    failed = runner.run()
-
-    if config.show_snippets and runner.undefined_steps:
-        print_undefined_step_snippets(runner.undefined_steps,
-                                      colored=config.color)
+        runner.run_file(filepath)
+    except:
+        failed = True
 
     return 1 if failed else 0
