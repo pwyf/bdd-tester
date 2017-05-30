@@ -32,14 +32,11 @@ class DQRunner(Runner):
         self.context = Context(self)
         self.context.doc = doc
 
-        failed = self.run()
+        self.run()
 
         if self.config.show_snippets and self.undefined_steps:
             print_undefined_step_snippets(self.undefined_steps,
                                           colored=self.config.color)
-
-        if failed:
-            raise Exception
 
         return self.context.score
 
