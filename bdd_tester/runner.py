@@ -97,7 +97,8 @@ def main(args=[]):
     failed = False
     try:
         runner.run_file(filepath)
-    except:
+    except Exception as e:
+        print(e)
         failed = True
 
     return 1 if failed else 0
