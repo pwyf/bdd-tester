@@ -57,9 +57,8 @@ def step_impl(context):
     assert(True)
     # raise NotImplementedError('STEP: Given the activity is current')
 
-@then('`{xpath_expression}` should have at least {reqd_chars} characters')
+@then('`{xpath_expression}` should have at least {reqd_chars:d} characters')
 def step_impl(context, xpath_expression, reqd_chars):
-    reqd_chars = int(reqd_chars)
     vals = context.xml.xpath(xpath_expression)
     if len(vals) == 0:
         assert(False)
@@ -92,9 +91,8 @@ def mkdate(date_str):
 def get_reference_date():
     return datetime.date.today()
 
-@given('`{xpath_expression}` is at least {months_ahead} months ahead')
+@given('`{xpath_expression}` is at least {months_ahead:d} months ahead')
 def step_impl(context, xpath_expression, months_ahead):
-    months_ahead = int(months_ahead)
     dates = context.xml.xpath(xpath_expression)
 
     if len(dates) == 0:
