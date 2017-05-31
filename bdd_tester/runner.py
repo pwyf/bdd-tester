@@ -38,8 +38,6 @@ class DQRunner(Runner):
             print_undefined_step_snippets(self.undefined_steps,
                                           colored=self.config.color)
 
-        return self.context.score
-
     def run_with_paths(self):
 
         self.load_hooks()
