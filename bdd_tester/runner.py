@@ -14,8 +14,6 @@ class DQRunner(Runner):
 
         # eventually we can add our own arg parser here.
         config = Configuration(args)
-        if not config.format:
-            config.format = [config.default_format]
 
         super(DQRunner, self).__init__(config)
 
