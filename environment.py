@@ -1,6 +1,10 @@
 import json
+import logging
 
 
+def before_all(context):
+    context.config.setup_logging(level=logging.ERROR, filename='error.log', filemode='w')
+    context.logger = logging.getLogger()
 
 def before_scenario(context, scenario):
     if context.active_outline:
