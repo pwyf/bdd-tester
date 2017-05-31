@@ -22,6 +22,10 @@ def step_impl(context, xpath_expression, codelist):
     vals = context.xml.xpath(xpath_expression)
 
     if len(vals) == 0:
+        msg = '`{xpath_expression}` not found'.format(
+            xpath_expression=xpath_expression
+        )
+        context.logger.error(msg)
         assert(False)
 
     codelist_path = join('codelists', '2', codelist + '.json')
