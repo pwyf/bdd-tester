@@ -29,15 +29,16 @@ def step_impl(context, xpath_expression, codelist):
         j = json.load(f)
     codes = [x['code'] for x in j['data']]
 
+    success = True
     for val in vals:
         if val not in codes:
+            success = False
             msg = '{val} is not on the {codelist} codelist'.format(
                 val=val,
                 codelist=codelist,
             )
             context.logger.error(msg)
-            assert(False)
-    assert(True)
+    assert(success)
 
 @then('at least one `{xpath_expression}` should be on the {codelist} codelist')
 def step_impl(context, xpath_expression, codelist):
