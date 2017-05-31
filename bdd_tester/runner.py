@@ -8,11 +8,6 @@ from lxml import etree
 
 class DQRunner(Runner):
     def __init__(self, args=[]):
-        # hack. We use the existing arg parser, then
-        # attempt to extract the XML file from the
-        # parsed args.
-
-        # eventually we can add our own arg parser here.
         config = Configuration(args)
 
         super(DQRunner, self).__init__(config)
@@ -84,6 +79,11 @@ class DQRunner(Runner):
         return self.run_model()
 
 def main(args=[]):
+    # hack. We use the existing arg parser, then
+    # attempt to extract the XML file from the
+    # parsed args.
+
+    # eventually we can add our own arg parser here.
     if len(args) > 0 and len(args[0]) > 0 and args[0][0] != '-':
         filepath = args.pop(0)
     else:
