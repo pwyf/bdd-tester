@@ -31,12 +31,7 @@ def step_impl(context, xpath_expression, codelist):
 
     for val in vals:
         if val not in codes:
-            if context.activity_id:
-                id_ = context.activity_id
-            else:
-                id_ = 'Activity {}'.format(context.activity_idx)
-            msg = '{id}: {val} is not on the {codelist} codelist'.format(
-                id=id_,
+            msg = '{val} is not on the {codelist} codelist'.format(
                 val=val,
                 codelist=codelist,
             )
