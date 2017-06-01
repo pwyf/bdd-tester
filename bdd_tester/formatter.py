@@ -17,6 +17,7 @@ class DQSummaryFormatter(Formatter):
     def close(self):
         self.stream.write(json.dumps(self.score, indent=4))
         self.stream.write('\n')
+        self.close_stream()
 
     def feature(self, feature):
         self.current_feature = feature
