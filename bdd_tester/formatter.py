@@ -30,10 +30,10 @@ class DQSummaryFormatter(Formatter):
                 self.process_scenario(scenario)
 
     def process_scenario(self, scenario):
-        scenario_outline_name = scenario.name.split(' -- ')[0]
-        if scenario_outline_name not in self.score:
+        scenario_name = scenario.name.split(' -- ')[0]
+        if scenario_name not in self.score:
             # initialise score for scenario
-            self.score[scenario_outline_name] = {
+            self.score[scenario_name] = {
                 'passed': 0,
                 'failed': 0,
                 'not-relevant': 0,
@@ -41,11 +41,11 @@ class DQSummaryFormatter(Formatter):
         for x in scenario.steps:
             if x.status == 'failed':
                 if x.step_type == 'given':
-                    self.score[scenario_outline_name]['not-relevant'] += 1
+                    self.score[scenario_name]['not-relevant'] += 1
                 else:
-                    self.score[scenario_outline_name]['failed'] += 1
+                    self.score[scenario_name]['failed'] += 1
                 return
-        self.score[scenario_outline_name]['passed'] += 1
+        self.score[scenario_name]['passed'] += 1
 
     def process_scenario_outline(self, scenario_outline):
         for scenario in scenario_outline.scenarios:
