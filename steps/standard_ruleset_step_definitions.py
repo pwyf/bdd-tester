@@ -1,11 +1,8 @@
-from datetime import date, datetime
+from datetime import datetime
 import re
 
 from bdd_tester.exceptions import StepException
 
-
-def get_reference_date():
-    return date.today()
 
 @given('an IATI activity')
 def step_impl(context):
@@ -84,12 +81,11 @@ def step_impl(context, xpath_expression1, xpath_expression2):
 
 @then('`{xpath_expression}` should be today, or in the past')
 def step_impl(context, xpath_expression):
-    ref_date = get_reference_date()
     val = context.xml.xpath(xpath_expression)[0]
     date = datetime.strptime(val, '%Y-%m-%d').date()
-    if date > ref_date:
+    if date > context.today:
         msg = '{} should be before {}, but isn\'t'.format(
             date,
-            ref_date,
+            context.today,
         )
         raise StepException(context, msg)

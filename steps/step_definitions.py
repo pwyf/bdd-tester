@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 from os.path import join
 import re
@@ -118,12 +118,9 @@ def step_impl(context, xpath_expression, consts):
 
 def mkdate(date_str):
     try:
-        return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+        return datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
         return None
-
-def get_reference_date():
-    return datetime.date.today()
 
 @given('`{xpath_expression}` is at least {months_ahead:d} months ahead')
 def step_impl(context, xpath_expression, months_ahead):
@@ -149,11 +146,10 @@ def step_impl(context, xpath_expression, months_ahead):
     prefix = '' if len(valid_dates) == 1 or max(valid_dates) == min(valid_dates) else 'the latest '
 
     max_date = max(valid_dates)
-    reference_date = get_reference_date()
-    year_diff = max_date.year - reference_date.year
-    month_diff = 12 * year_diff + max_date.month - reference_date.month
+    year_diff = max_date.year - context.today.year
+    month_diff = 12 * year_diff + max_date.month - context.today.month
     if month_diff == months_ahead:
-        success = max_date.day > reference_date.day
+        success = max_date.day > context.today.day
     else:
         success = month_diff > months_ahead
     if not success:
@@ -179,7 +175,6 @@ def step_impl(context, xpath_expression, const):
 @then('`{xpath_expression}` should be available forward {period}')
 def step_impl(context, xpath_expression, period):
     vals = context.xml.xpath(xpath_expression)
-    reference_date = get_reference_date()
 
     def max_date(dates, default):
         dates = list(filter(lambda x: x is not None, [mkdate(d) for d in dates]))
@@ -223,7 +218,7 @@ def step_impl(context, xpath_expression, period):
     # 1) period-end after reference date
     # 2) a maximum number of days, depending on # of qtrs.
     for element in vals:
-        after_ref = check_after(element, reference_date)
+        after_ref = check_after(element, context.today)
         within_length = max_budget_length(element, max_days)
         if after_ref and within_length:
             assert(True)
