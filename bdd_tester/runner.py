@@ -23,7 +23,19 @@ class DQRunner(Runner):
         except etree.XMLSyntaxError as e:
             raise Exception('Failed trying to parse {}'.format(filepath))
         self.context = Context(self)
-        self.context.doc = doc
+
+        # add a bunch of useful stuff to the context
+        organisations = doc.xpath('//iati-organisation')
+        if len(organisations) > 0:
+            self.context.filetype = 'org'
+            # if this looks like an org file, set the organisation
+            self.context.organisation = organisations[0]
+            self.context.activities = []
+        else:
+            self.context.filetype = 'activity'
+            # otherwise, set the activities
+            self.context.activities = doc.xpath('//iati-activity')
+            self.context.organisation = None
 
         self.run()
 
@@ -45,19 +57,8 @@ class DQRunner(Runner):
                                     if not self.config.exclude(filename) ]
         features = parse_features(feature_locations, language=self.config.lang)
 
-        doc = self.context.doc
-        organisations = doc.xpath('//iati-organisation')
-        if len(organisations) > 0:
-            self.context.filetype = 'org'
-            # if this looks like an org file, set the organisation
-            self.context.organisation = organisations[0]
-            self.context.activities = []
-        else:
-            self.context.filetype = 'activity'
-            # otherwise, set the activities
-            self.context.activities = doc.xpath('//iati-activity')
-            self.context.organisation = None
-
+        # Hack to run the scenario once for each activity
+        if self.context.filetype == 'activity':
             activities = self.context.activities
             rows = [['Activity {}'.format(idx)] for idx, _ in enumerate(activities)]
             table = Table(
@@ -66,7 +67,6 @@ class DQRunner(Runner):
                 rows=rows,
             )
             examples = Examples('', 0, 'Example', 'Activity', table=table)
-            # Hack to run the scenario once for each activity
             for feature in features:
                 for scenario in feature.scenarios:
                     if type(scenario) is ScenarioOutline:
