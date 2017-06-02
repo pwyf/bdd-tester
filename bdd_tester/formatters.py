@@ -12,6 +12,7 @@ class DQSummaryFormatter(Formatter):
     def __init__(self, stream_opener, config):
         super(DQSummaryFormatter, self).__init__(stream_opener, config)
 
+        # setup output filepath
         filepath = join('output', config.userdata['filename'], stream_opener.name)
         self.stream_opener = StreamOpener(filepath)
         self.stream = self.open()
@@ -20,6 +21,7 @@ class DQSummaryFormatter(Formatter):
         self.score = {}
 
     def close(self):
+        # dump results
         self.stream.write(json.dumps(self.score, indent=4))
         self.stream.write('\n')
         self.close_stream()
@@ -32,7 +34,11 @@ class DQSummaryFormatter(Formatter):
                 self.score[self.scenario_name]['failed'] += 1
         else:
             if step.status == 'failed':
+                # the condition failed
                 self.score[self.scenario_name]['not-relevant'] += 1
+            else:
+                # we don't care about conditions that pass
+                pass
 
     def scenario(self, scenario):
         if not scenario._row or scenario._row.index == 1:
@@ -50,11 +56,13 @@ class DQLogFormatter(Formatter):
 
     def __init__(self, stream_opener, config):
         super(DQLogFormatter, self).__init__(stream_opener, config)
+        # setup the output filepath
         self.output_path = join('output', config.userdata['filename'])
 
     def result(self, step):
         if step.step_type == 'then':
             if step.status == 'failed':
+                # log the exception
                 self.stream.write(str(step.exception) + '\n')
 
     def scenario(self, scenario):
