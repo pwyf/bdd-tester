@@ -18,6 +18,7 @@ if __name__ == '__main__':
     args = vars(parser.parse_args())
     if args['features'] == []:
         args['features'] = default_feature_paths
+    args['capture_summary'] = False
 
     failed = False
     try:

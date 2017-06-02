@@ -5,7 +5,8 @@ from setuptools import setup
 requirements = """
 behave==1.2.5
 lxml==3.7.1
-requests
+requests==2.14.2
+six==1.10.0
 """
 
 setup(

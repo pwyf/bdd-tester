@@ -1,4 +1,8 @@
+import json
+import sys
+
 from behave.configuration import Configuration
+from six import StringIO
 
 from bdd_tester.runner import DQRunner
 
@@ -20,15 +24,17 @@ def bdd_tester(filepath, features, **kwargs):
     for formatter in formatters:
         command_args += ['--format', formatter]
 
-    # specify the summary formatter output filename
-    command_args += ['--outfile', 'summary.output']
-
     # pass stuff to behave via user-defined variables
     if kwargs.get('today'):
         command_args += ['--define', 'today=' + kwargs.get('today')]
     if not kwargs.get('output_path'):
         output_path = default_output_path
     command_args += ['--define', 'output_path=' + output_path]
+
+    capture_summary = kwargs.get('capture_summary', True)
+    if not capture_summary:
+        # specify the summary formatter output filename
+        command_args += ['--outfile', 'summary.output']
 
     # specify the location of the test files (features)
     command_args += features
@@ -39,5 +45,16 @@ def bdd_tester(filepath, features, **kwargs):
     # construct the runner!
     runner = DQRunner(config)
 
+    if capture_summary:
+        # capture output
+        old_stdout = sys.stdout
+        sys.stdout = StringIO()
+
     # get this show on the road
     runner.start(filepath)
+
+    if capture_summary:
+        result = sys.stdout
+        sys.stdout = old_stdout
+        # dump captured output
+        return json.loads(result.getvalue())
