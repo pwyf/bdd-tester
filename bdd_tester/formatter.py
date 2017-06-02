@@ -1,7 +1,8 @@
+from os.path import join
 import json
 
 from behave.model import ScenarioOutline
-from behave.formatter.base import Formatter
+from behave.formatter.base import Formatter, StreamOpener
 
 
 class DQSummaryFormatter(Formatter):
@@ -50,3 +51,26 @@ class DQSummaryFormatter(Formatter):
     def process_scenario_outline(self, scenario_outline):
         for scenario in scenario_outline.scenarios:
             self.process_scenario(scenario)
+
+class DQLogFormatter(Formatter):
+    name = 'dq_log'
+    description = 'DQ log formatter'
+
+    def result(self, step):
+        if step.step_type == 'then':
+            if step.status == 'failed':
+                self.stream.write(str(step.exception) + '\n')
+
+    def scenario(self, scenario):
+        if not scenario._row or scenario._row.index == 1:
+            # close the current stream
+            self.close()
+
+            # open a new output filestream,
+            # using the scenario name
+            scenario_name = scenario.name.split(' -- ')[0]
+            filepath = '{}.output'.format(
+                join('output', scenario_name.lower().replace(' ', '_'))
+            )
+            self.stream_opener = StreamOpener(filepath)
+            self.open()
