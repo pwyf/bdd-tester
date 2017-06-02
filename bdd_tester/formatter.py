@@ -20,37 +20,25 @@ class DQSummaryFormatter(Formatter):
         self.stream.write('\n')
         self.close_stream()
 
-    def feature(self, feature):
-        self.current_feature = feature
-
-    def eof(self):
-        for scenario in self.current_feature:
-            if isinstance(scenario, ScenarioOutline):
-                self.process_scenario_outline(scenario)
+    def result(self, step):
+        if step.step_type == 'given':
+            if step.status == 'failed':
+                self.score[self.scenario_name]['not-relevant'] += 1
+        else:
+            if step.status == 'passed':
+                self.score[self.scenario_name]['passed'] += 1
             else:
-                self.process_scenario(scenario)
+                self.score[self.scenario_name]['failed'] += 1
 
-    def process_scenario(self, scenario):
-        scenario_name = scenario.name.split(' -- ')[0]
-        if scenario_name not in self.score:
+    def scenario(self, scenario):
+        if not scenario._row or scenario._row.index == 1:
+            self.scenario_name = scenario.name.split(' -- ')[0]
             # initialise score for scenario
-            self.score[scenario_name] = {
+            self.score[self.scenario_name] = {
                 'passed': 0,
                 'failed': 0,
                 'not-relevant': 0,
             }
-        for x in scenario.steps:
-            if x.status == 'failed':
-                if x.step_type == 'given':
-                    self.score[scenario_name]['not-relevant'] += 1
-                else:
-                    self.score[scenario_name]['failed'] += 1
-                return
-        self.score[scenario_name]['passed'] += 1
-
-    def process_scenario_outline(self, scenario_outline):
-        for scenario in scenario_outline.scenarios:
-            self.process_scenario(scenario)
 
 class DQLogFormatter(Formatter):
     name = 'dq_log'
