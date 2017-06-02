@@ -19,11 +19,13 @@ bdd_tester [IATI XML File]
 …or just run a single feature file e.g.
 
 ```shell
-bdd_tester [IATI XML File] features/pwyf_2017/aid_type.feature
+bdd_tester --feature features/pwyf_2017/aid_type.feature [IATI XML File]
 ```
 
-There’s also a bunch of extra settings provided by `behave` here. See:
+# API
 
-```shell
-bdd_tester --help
+```python
+from bdd_tester import bdd_tester
+
+bdd_tester(xml_file, **kwargs)
 ```
