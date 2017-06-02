@@ -18,14 +18,10 @@ if __name__ == '__main__':
     args = vars(parser.parse_args())
     if args['features'] == []:
         args['features'] = default_feature_paths
-    features = args['features']
-    del args['features']
-    filepath = args['filepath']
-    del args['filepath']
 
     failed = False
     try:
-        bdd_tester(filepath, features, **args)
+        bdd_tester(**args)
     except Exception as e:
         print(e)
         failed = True
