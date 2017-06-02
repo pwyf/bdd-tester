@@ -11,7 +11,11 @@ class DQSummaryFormatter(Formatter):
 
     def __init__(self, stream_opener, config):
         super(DQSummaryFormatter, self).__init__(stream_opener, config)
+
+        filepath = join('output', config.userdata['filename'], stream_opener.name)
+        self.stream_opener = StreamOpener(filepath)
         self.stream = self.open()
+
         # initialise scores
         self.score = {}
 
@@ -44,6 +48,10 @@ class DQLogFormatter(Formatter):
     name = 'dq_log'
     description = 'DQ log formatter'
 
+    def __init__(self, stream_opener, config):
+        super(DQLogFormatter, self).__init__(stream_opener, config)
+        self.output_path = join('output', config.userdata['filename'])
+
     def result(self, step):
         if step.step_type == 'then':
             if step.status == 'failed':
@@ -57,8 +65,9 @@ class DQLogFormatter(Formatter):
             # open a new output filestream,
             # using the scenario name
             scenario_name = scenario.name.split(' -- ')[0]
+            slugified_name = scenario_name.lower().replace(' ', '_')
             filepath = '{}.output'.format(
-                join('output', scenario_name.lower().replace(' ', '_'))
+                join(self.output_path, slugified_name)
             )
             self.stream_opener = StreamOpener(filepath)
             self.open()

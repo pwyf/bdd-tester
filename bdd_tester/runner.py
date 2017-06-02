@@ -1,3 +1,5 @@
+from os.path import basename
+
 from behave.configuration import Configuration
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
@@ -25,6 +27,7 @@ class DQRunner(Runner):
         self.context = Context(self)
 
         # add a bunch of useful stuff to the context
+        self.context.config.userdata['filename'] = basename(filepath)
         organisations = doc.xpath('//iati-organisation')
         if len(organisations) > 0:
             self.context.filetype = 'org'
