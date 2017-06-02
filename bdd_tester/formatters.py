@@ -5,6 +5,9 @@ from behave.model import ScenarioOutline
 from behave.formatter.base import Formatter, StreamOpener
 
 
+def get_scenario_name(scenario):
+    return scenario.name.split(' -- ')[0]
+
 class DQSummaryFormatter(Formatter):
     name = 'dq_summary'
     description = 'DQ summary formatter'
@@ -43,7 +46,7 @@ class DQSummaryFormatter(Formatter):
     def feature(self, feature):
         # initialise score for scenarios
         for scenario in feature.scenarios:
-            scenario_name = scenario.name.split(' -- ')[0]
+            scenario_name = get_scenario_name(scenario)
             self.score[scenario_name] = {
                 'passed': 0,
                 'failed': 0,
@@ -52,7 +55,7 @@ class DQSummaryFormatter(Formatter):
 
     def scenario(self, scenario):
         if not scenario._row or scenario._row.index == 1:
-            self.scenario_name = scenario.name.split(' -- ')[0]
+            self.scenario_name = get_scenario_name(scenario)
 
 class DQLogFormatter(Formatter):
     name = 'dq_log'
@@ -76,7 +79,7 @@ class DQLogFormatter(Formatter):
 
             # open a new output filestream,
             # using the scenario name
-            scenario_name = scenario.name.split(' -- ')[0]
+            scenario_name = get_scenario_name(scenario)
             slugified_name = scenario_name.lower().replace(' ', '_')
             filepath = '{}.output'.format(
                 join(self.output_path, slugified_name)
