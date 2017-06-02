@@ -1,6 +1,5 @@
 from datetime import date, datetime
 
-from behave.configuration import Configuration
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
 from behave.runner_util import parse_features, print_undefined_step_snippets
@@ -9,41 +8,7 @@ from lxml import etree
 
 
 class DQRunner(Runner):
-    def __init__(self, filepath, **kwargs):
-        # we'll add the behave args to this list
-        command_args = []
-
-        # set path to IATI file to test
-        self.filepath = filepath
-
-        # disable the default summary
-        command_args.append('--no-summary')
-
-        # declare some custom formatters
-        formatters = [
-            'bdd_tester.formatters:DQSummaryFormatter',
-            'bdd_tester.formatters:DQLogFormatter',
-        ]
-        for formatter in formatters:
-            command_args += ['--format', formatter]
-
-        # specify the summary formatter output filename
-        command_args += ['--outfile', 'summary.output']
-
-        # pass stuff to behave via user-defined variables
-        if kwargs.get('today'):
-            command_args += ['--define', 'today=' + kwargs.get('today')]
-        command_args += ['--define', 'output_path=' + kwargs.get('output_path')]
-
-        # specify the location of the test files (features)
-        command_args += kwargs.get('features')
-
-        # create a config instance
-        config = Configuration(command_args, load_config=False)
-
-        super(DQRunner, self).__init__(config)
-
-    def start(self):
+    def start(self, filepath):
         # initialise context
         self.context = Context(self)
 
@@ -56,11 +21,11 @@ class DQRunner(Runner):
 
         # parse the IATI XML
         try:
-            doc = etree.parse(self.filepath)
+            doc = etree.parse(filepath)
         except OSError:
-            raise Exception('{} is not a valid XML file'.format(self.filepath))
+            raise Exception('{} is not a valid XML file'.format(filepath))
         except etree.XMLSyntaxError as e:
-            raise Exception('Failed trying to parse {}'.format(self.filepath))
+            raise Exception('Failed trying to parse {}'.format(filepath))
 
         # add IATI XML data to context
         organisations = doc.xpath('//iati-organisation')
