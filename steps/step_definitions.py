@@ -3,6 +3,8 @@ import json
 from os.path import join
 import re
 
+from bdd_tester.exceptions import StepException
+
 
 @given('an organisation file')
 def step_impl(context):
@@ -25,24 +27,28 @@ def step_impl(context, xpath_expression, codelist):
         msg = '`{xpath_expression}` not found'.format(
             xpath_expression=xpath_expression
         )
-        context.logger.error(msg)
-        assert(False)
+        raise StepException(context, msg)
 
     codelist_path = join('codelists', '2', codelist + '.json')
     with open(codelist_path) as f:
         j = json.load(f)
     codes = [x['code'] for x in j['data']]
 
+    invalid_vals = []
     success = True
     for val in vals:
         if val not in codes:
             success = False
-            msg = '{val} is not on the {codelist} codelist'.format(
-                val=val,
-                codelist=codelist,
-            )
-            context.logger.error(msg)
-    assert(success)
+            invalid_vals.append(val)
+
+    if not success:
+        msg = '{invalid_vals} {isare} not on the {codelist} codelist'.format(
+            invalid_vals=', '.join(invalid_vals),
+            isare='is' if len(invalid_vals) == 1 else 'are',
+            codelist=codelist,
+        )
+        raise StepException(context, msg)
+    assert(True)
 
 @then('at least one `{xpath_expression}` should be on the {codelist} codelist')
 def step_impl(context, xpath_expression, codelist):
