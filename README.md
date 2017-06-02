@@ -27,5 +27,5 @@ bdd_tester --feature features/pwyf_2017/aid_type.feature [IATI XML File]
 ```python
 from bdd_tester import bdd_tester
 
-bdd_tester(xml_file, **kwargs)
+bdd_tester(xml_file, features, **kwargs)
 ```
