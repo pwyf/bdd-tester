@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from behave.configuration import Configuration
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
@@ -42,15 +44,25 @@ class DQRunner(Runner):
         super(DQRunner, self).__init__(config)
 
     def start(self):
+        # initialise context
+        self.context = Context(self)
+
+        # setup 'today' date and add to context
+        today_str = self.context.config.userdata.get('today')
+        if today_str:
+            self.context.today = datetime.strptime(today_str, '%Y-%m-%d').date()
+        else:
+            self.context.today = date.today()
+
+        # parse the IATI XML
         try:
             doc = etree.parse(self.filepath)
         except OSError:
             raise Exception('{} is not a valid XML file'.format(self.filepath))
         except etree.XMLSyntaxError as e:
             raise Exception('Failed trying to parse {}'.format(self.filepath))
-        self.context = Context(self)
 
-        # add a bunch of useful stuff to the context
+        # add IATI XML data to context
         organisations = doc.xpath('//iati-organisation')
         if len(organisations) > 0:
             self.context.filetype = 'org'
@@ -63,6 +75,7 @@ class DQRunner(Runner):
             self.context.activities = doc.xpath('//iati-activity')
             self.context.organisation = None
 
+        # go!
         self.run()
 
         if self.config.show_snippets and self.undefined_steps:
