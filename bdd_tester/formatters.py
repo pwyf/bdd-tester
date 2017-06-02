@@ -15,10 +15,11 @@ class DQSummaryFormatter(Formatter):
     def __init__(self, stream_opener, config):
         super(DQSummaryFormatter, self).__init__(stream_opener, config)
 
-        # setup output file
-        output_file = join(config.userdata['output_path'], stream_opener.name)
-        self.stream_opener = StreamOpener(output_file)
-        self.stream = self.open()
+        if stream_opener.name:
+            # setup output file
+            output_file = join(config.userdata['output_path'], stream_opener.name)
+            self.stream_opener = StreamOpener(output_file)
+            self.stream = self.open()
 
         # initialise scores
         self.score = {}
