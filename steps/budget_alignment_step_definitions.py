@@ -1,13 +1,16 @@
 import json
 from os.path import join
 
+from bdd_tester.exceptions import StepException
+
 
 @given('at least one `{xpath_expression}` is on the {codelist} codelist')
 def step_impl(context, xpath_expression, codelist):
     vals = context.xml.xpath(xpath_expression)
 
     if len(vals) == 0:
-        assert(False)
+        msg = '`{}` not found'.format(xpath_expression)
+        raise StepException(context, msg)
 
     codelist_path = join('codelists', '2', codelist + '.json')
     with open(codelist_path) as f:
@@ -18,4 +21,10 @@ def step_impl(context, xpath_expression, codelist):
         if val in codes:
             assert(True)
             return
-    assert(False)
+
+    msg = '{invalid_vals} {isare} not on the {codelist} codelist'.format(
+        invalid_vals=', '.join(vals),
+        isare='is' if len(vals) == 1 else 'are',
+        codelist=codelist,
+    )
+    raise StepException(context, msg)

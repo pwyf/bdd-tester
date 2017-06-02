@@ -8,25 +8,23 @@ from bdd_tester.exceptions import StepException
 
 @given('file is an organisation file')
 def step_impl(context):
-    assert(context.filetype == 'org')
+    if context.filetype != 'org':
+        raise StepException(context, 'Not an organisation file')
 
 # NB the original PWYF test also checked non-empty
 @then('`{xpath_expression}` should be present')
 def step_impl(context, xpath_expression):
     vals = context.xml.xpath(xpath_expression)
-    if len(vals) > 0:
-        assert(True)
-    else:
-        assert(False)
+    if len(vals) == 0:
+        msg = '`{}` not found'.format(xpath_expression)
+        raise StepException(context, msg)
 
 @then('every `{xpath_expression}` should be on the {codelist} codelist')
 def step_impl(context, xpath_expression, codelist):
     vals = context.xml.xpath(xpath_expression)
 
     if len(vals) == 0:
-        msg = '`{xpath_expression}` not found'.format(
-            xpath_expression=xpath_expression
-        )
+        msg = '`{}` not found'.format(xpath_expression)
         raise StepException(context, msg)
 
     codelist_path = join('codelists', '2', codelist + '.json')
@@ -55,7 +53,8 @@ def step_impl(context, xpath_expression, codelist):
     vals = context.xml.xpath(xpath_expression)
 
     if len(vals) == 0:
-        assert(False)
+        msg = '`{}` not found'.format(xpath_expression)
+        raise StepException(context, msg)
 
     codelist_path = join('codelists', '2', codelist + '.json')
     with open(codelist_path) as f:
@@ -66,7 +65,13 @@ def step_impl(context, xpath_expression, codelist):
         if val in codes:
             assert(True)
             return
-    assert(False)
+
+    msg = '{invalid_vals} {isare} not on the {codelist} codelist'.format(
+        invalid_vals=', '.join(vals),
+        isare='is' if len(vals) == 1 else 'are',
+        codelist=codelist,
+    )
+    raise StepException(context, msg)
 
 @given('the activity is current')
 def step_impl(context):
@@ -77,10 +82,19 @@ def step_impl(context):
 def step_impl(context, xpath_expression, reqd_chars):
     vals = context.xml.xpath(xpath_expression)
     if len(vals) == 0:
-        assert(False)
+        msg = '`{}` not found'.format(xpath_expression)
+        raise StepException(context, msg)
+
     most_chars, most_str = max([(len(val), val) for val in vals])
     result = most_chars > reqd_chars
-    assert(result)
+
+    if not result:
+        msg = '`{}` has fewer than {} characters (it has {})'.format(
+            xpath_expression,
+            reqd_chars,
+            most_chars,
+        )
+        raise StepException(context, msg)
 
 @given('`{xpath_expression}` is one of {consts}')
 def step_impl(context, xpath_expression, consts):
@@ -95,8 +109,12 @@ def step_impl(context, xpath_expression, consts):
             # explain = '{vals_explain} is one of {const_explain} (it\'s {val})'
             assert(True)
             return
-    # explain = '{vals_explain} is not one of {const_explain} (it\'s {val})'
-    assert(False)
+    msg = '`{}` is not one of {} (it\'s {})'.format(
+        xpath_expression,
+        consts,
+        val,
+    )
+    raise StepException(context, msg)
 
 def mkdate(date_str):
     try:
@@ -112,33 +130,50 @@ def step_impl(context, xpath_expression, months_ahead):
     dates = context.xml.xpath(xpath_expression)
 
     if len(dates) == 0:
-        # explain = '`{xpath_expression}` is not present, so assuming it is not at least {months} months ahead'
-        # explain = explain.format(xpath_expression=xpath_expression, months=months)
-        assert(False)
+        msg = '`{}` is not present, so assuming it is not at least {} months ahead'.format(
+            xpath_expression,
+            months_ahead,
+        )
+        raise StepException(context, msg)
 
     valid_dates = list(filter(lambda x: x, [mkdate(date_str) for date_str in dates]))
     if not valid_dates:
         # explain = '{date} does not use format YYYY-MM-DD, so assuming it is not at least {months} months ahead'
         # explain = explain.format(date=dates[0], months=months)
-        assert(False)
+        msg = '`{}` does not use format YYYY-MM-DD, so assuming it is not at least {} months ahead'.format(
+            dates[0],
+            months_ahead,
+        )
+        raise StepException(context, msg)
 
-    # prefix = '' if len(valid_dates) == 1 or max(valid_dates) == min(valid_dates) else 'the most recent '
+    prefix = '' if len(valid_dates) == 1 or max(valid_dates) == min(valid_dates) else 'the latest '
 
     max_date = max(valid_dates)
     reference_date = get_reference_date()
     year_diff = max_date.year - reference_date.year
     month_diff = 12 * year_diff + max_date.month - reference_date.month
     if month_diff == months_ahead:
-        assert(max_date.day > reference_date.day)
+        success = max_date.day > reference_date.day
     else:
-        assert(month_diff > months_ahead)
+        success = month_diff > months_ahead
+    if not success:
+        msg = '{}`{}` is less than {} months ahead'.format(
+            prefix,
+            xpath_expression,
+            months_ahead,
+        )
+        raise StepException(context, msg)
 
 @given('`{xpath_expression}` is not {const}')
 def step_impl(context, xpath_expression, const):
     vals = context.xml.xpath(xpath_expression)
     for val in vals:
         if val == const:
-            assert(False)
+            msg = '`{}` is {}'.format(
+                xpath_expression,
+                val,
+            )
+            raise StepException(context, msg)
     assert(True)
 
 @then('`{xpath_expression}` should be available forward {period}')
@@ -193,9 +228,12 @@ def step_impl(context, xpath_expression, period):
         if after_ref and within_length:
             assert(True)
             return
-    assert(False)
+
+    msg = 'Failed'
+    raise StepException(context, msg)
 
 def either_or(context, tmpl, xpath_expressions):
+    exceptions = []
     for xpath_expression in xpath_expressions:
         try:
             context.execute_steps(tmpl.format(
@@ -203,9 +241,11 @@ def either_or(context, tmpl, xpath_expressions):
             )
             assert(True)
             return
-        except AssertionError:
-            pass
-    assert(False)
+        except StepException as e:
+            exceptions.append(e)
+
+    msg = ' and '.join([str(e) for e in exceptions])
+    raise StepException(context, msg)
 
 @given('either `{xpath_expression1}` or `{xpath_expression2}` {statement}')
 def step_impl(context, xpath_expression1, xpath_expression2, statement):
