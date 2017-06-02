@@ -3,7 +3,7 @@ from behave.configuration import Configuration
 from bdd_tester.runner import DQRunner
 
 
-def bdd_tester(filepath, **kwargs):
+def bdd_tester(filepath, features, **kwargs):
     default_output_path = 'output'
 
     # we'll add the behave args to this list
@@ -31,7 +31,7 @@ def bdd_tester(filepath, **kwargs):
     command_args += ['--define', 'output_path=' + output_path]
 
     # specify the location of the test files (features)
-    command_args += kwargs.get('features')
+    command_args += features
 
     # create a config instance
     config = Configuration(command_args, load_config=False)
