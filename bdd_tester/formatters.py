@@ -40,15 +40,19 @@ class DQSummaryFormatter(Formatter):
                 # we don't care about conditions that pass
                 pass
 
-    def scenario(self, scenario):
-        if not scenario._row or scenario._row.index == 1:
-            self.scenario_name = scenario.name.split(' -- ')[0]
-            # initialise score for scenario
-            self.score[self.scenario_name] = {
+    def feature(self, feature):
+        # initialise score for scenarios
+        for scenario in feature.scenarios:
+            scenario_name = scenario.name.split(' -- ')[0]
+            self.score[scenario_name] = {
                 'passed': 0,
                 'failed': 0,
                 'not-relevant': 0,
             }
+
+    def scenario(self, scenario):
+        if not scenario._row or scenario._row.index == 1:
+            self.scenario_name = scenario.name.split(' -- ')[0]
 
 class DQLogFormatter(Formatter):
     name = 'dq_log'
