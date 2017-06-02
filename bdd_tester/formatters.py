@@ -21,14 +21,14 @@ class DQSummaryFormatter(Formatter):
         self.close_stream()
 
     def result(self, step):
-        if step.step_type == 'given':
-            if step.status == 'failed':
-                self.score[self.scenario_name]['not-relevant'] += 1
-        else:
+        if step.step_type == 'then':
             if step.status == 'passed':
                 self.score[self.scenario_name]['passed'] += 1
             else:
                 self.score[self.scenario_name]['failed'] += 1
+        else:
+            if step.status == 'failed':
+                self.score[self.scenario_name]['not-relevant'] += 1
 
     def scenario(self, scenario):
         if not scenario._row or scenario._row.index == 1:
