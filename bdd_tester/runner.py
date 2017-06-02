@@ -1,5 +1,3 @@
-from os.path import basename
-
 from behave.configuration import Configuration
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
@@ -9,25 +7,50 @@ from lxml import etree
 
 
 class DQRunner(Runner):
-    def __init__(self, args=[]):
-        config = Configuration(args)
+    def __init__(self, filepath, **kwargs):
+        # we'll add the behave args to this list
+        command_args = []
+
+        # set path to IATI file to test
+        self.filepath = filepath
+
+        # disable the default summary
+        command_args.append('--no-summary')
+
+        # declare some custom formatters
+        formatters = [
+            'bdd_tester.formatters:DQSummaryFormatter',
+            'bdd_tester.formatters:DQLogFormatter',
+        ]
+        for formatter in formatters:
+            command_args += ['--format', formatter]
+
+        # specify the summary formatter output filename
+        command_args += ['--outfile', 'summary.output']
+
+        # pass stuff to behave via user-defined variables
+        if kwargs.get('today'):
+            command_args += ['--define', 'today=' + kwargs.get('today')]
+        command_args += ['--define', 'output_path=' + kwargs.get('output_path')]
+
+        # specify the location of the test files (features)
+        command_args += kwargs.get('features')
+
+        # create a config instance
+        config = Configuration(command_args, load_config=False)
 
         super(DQRunner, self).__init__(config)
 
-    def run_file(self, filepath):
-        if not filepath:
-            raise Exception('Please provide an XML file to test')
-
+    def start(self):
         try:
-            doc = etree.parse(filepath)
+            doc = etree.parse(self.filepath)
         except OSError:
-            raise Exception('{} is not a valid XML file'.format(filepath))
+            raise Exception('{} is not a valid XML file'.format(self.filepath))
         except etree.XMLSyntaxError as e:
-            raise Exception('Failed trying to parse {}'.format(filepath))
+            raise Exception('Failed trying to parse {}'.format(self.filepath))
         self.context = Context(self)
 
         # add a bunch of useful stuff to the context
-        self.context.config.userdata['filename'] = basename(filepath)
         organisations = doc.xpath('//iati-organisation')
         if len(organisations) > 0:
             self.context.filetype = 'org'
@@ -80,24 +103,3 @@ class DQRunner(Runner):
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
-
-def main(args=[]):
-    # hack. We use the existing arg parser, then
-    # attempt to extract the XML file from the
-    # parsed args.
-
-    # eventually we can add our own arg parser here.
-    if len(args) > 0 and len(args[0]) > 0 and args[0][0] != '-':
-        filepath = args.pop(0)
-    else:
-        filepath = None
-
-    runner = DQRunner(args)
-    failed = False
-    try:
-        runner.run_file(filepath)
-    except Exception as e:
-        print(e)
-        failed = True
-
-    return 1 if failed else 0

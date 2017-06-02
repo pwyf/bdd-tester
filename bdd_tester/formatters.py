@@ -15,9 +15,9 @@ class DQSummaryFormatter(Formatter):
     def __init__(self, stream_opener, config):
         super(DQSummaryFormatter, self).__init__(stream_opener, config)
 
-        # setup output filepath
-        filepath = join('output', config.userdata['filename'], stream_opener.name)
-        self.stream_opener = StreamOpener(filepath)
+        # setup output file
+        output_file = join(config.userdata['output_path'], stream_opener.name)
+        self.stream_opener = StreamOpener(output_file)
         self.stream = self.open()
 
         # initialise scores
@@ -64,7 +64,7 @@ class DQLogFormatter(Formatter):
     def __init__(self, stream_opener, config):
         super(DQLogFormatter, self).__init__(stream_opener, config)
         # setup the output filepath
-        self.output_path = join('output', config.userdata['filename'])
+        self.output_path = config.userdata['output_path']
 
     def result(self, step):
         if step.step_type == 'then':
