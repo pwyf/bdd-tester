@@ -6,7 +6,7 @@ import re
 from bdd_tester.exceptions import StepException
 
 
-@given('an organisation file')
+@given('file is an organisation file')
 def step_impl(context):
     assert(context.filetype == 'org')
 
