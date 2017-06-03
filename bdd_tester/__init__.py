@@ -31,8 +31,8 @@ def bdd_tester(filepath, features, **kwargs):
         output_path = default_output_path
     command_args += ['--define', 'output_path=' + output_path]
 
-    capture_summary = kwargs.get('capture_summary', True)
-    if not capture_summary:
+    save_summary = kwargs.get('save_summary', False)
+    if save_summary:
         # specify the summary formatter output filename
         command_args += ['--outfile', 'summary.output']
 
@@ -45,16 +45,16 @@ def bdd_tester(filepath, features, **kwargs):
     # construct the runner!
     runner = DQRunner(config)
 
-    if capture_summary:
+    if not save_summary:
         # capture output
-        old_stdout = sys.stdout
+        stdout = sys.stdout
         sys.stdout = StringIO()
 
     # get this show on the road
     runner.start(filepath)
 
-    if capture_summary:
+    if not save_summary:
         result = sys.stdout
-        sys.stdout = old_stdout
+        sys.stdout = stdout
         # dump captured output
         return json.loads(result.getvalue())
