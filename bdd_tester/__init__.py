@@ -31,7 +31,9 @@ def bdd_tester(filepath, features, **kwargs):
     # pass stuff to behave via user-defined variables
     if kwargs.get('today'):
         command_args += ['--define', 'today=' + kwargs.get('today')]
-    if not kwargs.get('output_path'):
+    if kwargs.get('output_path'):
+        output_path = kwargs.get('output_path')
+    else:
         output_path = default_output_path
     command_args += ['--define', 'output_path=' + output_path]
 
