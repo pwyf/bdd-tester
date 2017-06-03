@@ -16,6 +16,10 @@ def bdd_tester(filepath, features, **kwargs):
     # disable the default summary
     command_args.append('--no-summary')
 
+    # don't capture stdout. It doesn't matter, really...
+    # but we don't need this (since we do it ourselves)
+    command_args.append('--no-capture')
+
     # declare some custom formatters
     formatters = [
         'bdd_tester.formatters:DQSummaryFormatter',
