@@ -43,22 +43,28 @@ def bdd_tester(filepath, features, **kwargs):
     # specify the location of the test files (features)
     command_args += features
 
-    # create a config instance
-    config = Configuration(command_args, load_config=False)
-
-    # construct the runner!
-    runner = DQRunner(config)
-
     if not save_summary:
         # capture output
-        stdout = sys.stdout
         sys.stdout = StringIO()
 
-    # get this show on the road
-    runner.start(filepath)
+    try:
+        # create a config instance
+        config = Configuration(command_args, load_config=False)
 
-    if not save_summary:
-        result = sys.stdout
-        sys.stdout = stdout
-        # dump captured output
-        return json.loads(result.getvalue())
+        # construct the runner!
+        runner = DQRunner(config)
+
+        # get this show on the road
+        runner.start(filepath)
+
+        if not save_summary:
+            result = sys.stdout
+            sys.stdout = sys.__stdout__
+            # dump captured output
+            return json.loads(result.getvalue())
+    except:
+        if not save_summary:
+            result = sys.stdout
+            sys.stdout = sys.__stdout__
+            print(result.getvalue())
+        raise
