@@ -66,10 +66,17 @@ class DQLogFormatter(Formatter):
         super(DQLogFormatter, self).__init__(stream_opener, config)
         # setup the output filepath
         self.output_path = config.userdata['output_path']
+        self.output_file_open = False
 
     def result(self, step):
         if step.step_type == 'then':
             if step.status == 'failed':
+                if not self.output_file_open:
+                    # open a new output filestream
+                    self.stream_opener = StreamOpener(self.output_file)
+                    self.open()
+                    self.output_file_open = True
+
                 # log the exception
                 self.stream.write(str(step.exception) + '\n')
 
@@ -77,13 +84,12 @@ class DQLogFormatter(Formatter):
         if not scenario._row or scenario._row.index == 1:
             # close the current stream
             self.close()
+            self.output_file_open = False
 
-            # open a new output filestream,
-            # using the scenario name
+            # set the new output filename, but don't open
+            # the stream until we have some results
             scenario_name = get_scenario_name(scenario)
             slugified_name = scenario_name.lower().replace(' ', '_')
-            filepath = '{}.output'.format(
+            self.output_file = '{}.output'.format(
                 join(self.output_path, slugified_name)
             )
-            self.stream_opener = StreamOpener(filepath)
-            self.open()
