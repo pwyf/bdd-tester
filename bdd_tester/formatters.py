@@ -8,6 +8,7 @@ from behave.formatter.base import Formatter, StreamOpener
 def get_scenario_name(scenario):
     return scenario.name.split(' -- ')[0]
 
+
 class DQSummaryFormatter(Formatter):
     name = 'dq_summary'
     description = 'DQ summary formatter'
