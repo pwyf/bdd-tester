@@ -13,10 +13,16 @@ pip install -r requirements.txt
 # Run
 
 ```shell
-bdd_tester --feature features/pwyf_2017/aid_type.feature [IATI XML File]
+bdd_tester [IATI XML File]
 ```
 
-Or for more options:
+…Or run a specific test/set of tests with e.g.:
+
+```shell
+bdd_tester --feature features/iati_standard_ruleset [IATI XML File]
+```
+
+For more options, run:
 
 ```shell
 bdd_tester --help
