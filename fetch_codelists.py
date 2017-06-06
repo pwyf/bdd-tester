@@ -3,7 +3,12 @@ from os.path import join
 
 import requests
 
+'''
+Script to fetch IATI codelists in json format and dump them in
+/codelists, for use in some of the tests.
 
+Usage: python fetch_codelists.py
+'''
 versions = (
     {
         'iati_version': '105',
