@@ -9,7 +9,8 @@ from lxml import etree
 
 class DQRunner(Runner):
     def start(self, filepath):
-        # initialise context
+        # initialise context.
+        # [monkeypatched]
         self.context = Context(self)
 
         # setup 'today' date and add to context
@@ -40,23 +41,16 @@ class DQRunner(Runner):
             self.context.activities = doc.xpath('//iati-activity')
             self.context.organisation = None
 
-        # go!
+        # [monkeypatched]
         self.run()
-
         if self.config.show_snippets and self.undefined_steps:
             print_undefined_step_snippets(self.undefined_steps,
                                           colored=self.config.color)
 
     def run_with_paths(self):
-
+        # [monkeypatched]
         self.load_hooks()
         self.load_step_definitions()
-
-        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
-        # self.setup_capture()
-        # self.run_hook('before_all', self.context)
-
-        # -- STEP: Parse all feature files (by using their file location).
         feature_locations = [ filename for filename in self.feature_locations()
                                     if not self.config.exclude(filename) ]
         features = parse_features(feature_locations, language=self.config.lang)
@@ -77,7 +71,7 @@ class DQRunner(Runner):
                         scenario.examples.append(examples)
         self.features.extend(features)
 
-        # -- STEP: Run all features.
+        # [monkeypatched]
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
