@@ -236,10 +236,11 @@ def either_or(context, tmpl, xpath_expressions):
             )
             assert(True)
             return
-        except StepException as e:
-            exceptions.append(e)
+        except AssertionError as e:
+            msg = str(e).split('StepException: ')[1]
+            exceptions.append(msg)
 
-    msg = ' and '.join([str(e) for e in exceptions])
+    msg = ' and '.join([msg for msg in exceptions])
     raise StepException(context, msg)
 
 @given('either `{xpath_expression1}` or `{xpath_expression2}` {statement}')
