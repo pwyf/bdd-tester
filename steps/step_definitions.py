@@ -75,8 +75,55 @@ def step_impl(context, xpath_expression, codelist):
 
 @given('the activity is current')
 def step_impl(context):
-    assert(True)
-    # raise NotImplementedError('STEP: Given the activity is current')
+    try:
+        context.execute_steps('given `activity-status/@code` is 2')
+        return
+    except AssertionError as e:
+        pass
+
+    end_planned = 'activity-date[@type="3"]/@iso-date |' \
+                  'activity-date[@type="3"]/text() |' \
+                  'activity-date[@type="end-planned"]/@iso-date |' \
+                  'activity-date[@type="end-planned"]/text()'
+    try:
+        inp = 'given `{}` is less than 12 months ago'.format(end_planned)
+        context.execute_steps(inp)
+        assert(True)
+        return
+    except AssertionError as e:
+        pass
+
+    end_planned = 'activity-date[@type="4"]/@iso-date |' \
+                  'activity-date[@type="4"]/text() |' \
+                  'activity-date[@type="end-actual"]/@iso-date |' \
+                  'activity-date[@type="end-actual"]/text()'
+    try:
+        inp = 'given `{}` is less than 12 months ago'.format(end_planned)
+        context.execute_steps(inp)
+        assert(True)
+        return
+    except AssertionError as e:
+        pass
+
+    xpath_expr = 'transaction[transaction-type/@code="C"] |' \
+                 'transaction[transaction-type/@code="D"] |' \
+                 'transaction[transaction-type/@code="E"] |' \
+                 'transaction[transaction-type/@code="2"] |' \
+                 'transaction[transaction-type/@code="3"] |' \
+                 'transaction[transaction-type/@code="4"]'
+    transactions = context.xml.xpath(xpath_expr)
+    for transaction in transactions:
+        transaction_date = 'transaction-date/@iso-date'
+        inp = 'given `{}` is less than 12 months ago'.format(transaction_date)
+        try:
+            context.execute_steps(inp)
+            assert(True)
+            return
+        except AssertionError as e:
+            pass
+
+    msg = 'Activity is not current'
+    raise StepException(context, msg)
 
 @then('`{xpath_expression}` should have at least {reqd_chars:d} characters')
 def step_impl(context, xpath_expression, reqd_chars):
@@ -160,6 +207,44 @@ def step_impl(context, xpath_expression, months_ahead):
         )
         raise StepException(context, msg)
 
+@given('`{xpath_expression}` is less than {months_ago:d} months ago')
+def step_impl(context, xpath_expression, months_ago):
+    dates = context.xml.xpath(xpath_expression)
+
+    if len(dates) == 0:
+        msg = '{xpath_expression} is not present, so assuming it is not less than {months_ago} months ago'
+        msg = msg.format(xpath_expression=xpath_expression, months_ago=months_ago)
+        raise StepException(context, msg)
+
+    valid_dates = list(filter(lambda x: x, [mkdate(date_str) for date_str in dates]))
+    if not valid_dates:
+        msg = '{xpath_expression} ({date}) does not use format YYYY-MM-DD, so assuming it is not less than {months_ago} months ago'
+        msg = msg.format(xpath_expression=xpath_expression, date=dates[0], months_ago=months_ago)
+        raise StepException(context, msg)
+
+    max_date = max(valid_dates)
+    prefix = '' if len(valid_dates) == 1 or max_date == min(valid_dates) else 'The most recent '
+
+    current_date = context.today
+    if max_date > current_date:
+        # msg = '{prefix}{xpath_expression} ({max_date}) is in the future'
+        assert(True)
+        return
+    year_diff = current_date.year - max_date.year
+    month_diff = 12 * year_diff + current_date.month - max_date.month
+    if month_diff == months_ago:
+        result = max_date.day > current_date.day
+    else:
+        result = month_diff < months_ago
+
+    if result:
+        assert(True)
+        return
+
+    msg = '{prefix}{xpath_expression} ({max_date}) is not less than {months_ago} months ago'
+    msg = msg.format(prefix=prefix, xpath_expression=xpath_expression, max_date=max_date, months_ago=months_ago)
+    raise StepException(context, msg)
+
 @given('`{xpath_expression}` is not {const}')
 def step_impl(context, xpath_expression, const):
     vals = context.xml.xpath(xpath_expression)
@@ -171,6 +256,20 @@ def step_impl(context, xpath_expression, const):
             )
             raise StepException(context, msg)
     assert(True)
+
+@given('`{xpath_expression}` is {const}')
+def step_impl(context, xpath_expression, const):
+    vals = context.xml.xpath(xpath_expression)
+    for val in vals:
+        if val == const:
+            assert(True)
+            return
+    msg = '`{}` is not {} (it\'s {})'.format(
+        xpath_expression,
+        const,
+        val,
+    )
+    raise StepException(context, msg)
 
 @then('`{xpath_expression}` should be available forward {period}')
 def step_impl(context, xpath_expression, period):
