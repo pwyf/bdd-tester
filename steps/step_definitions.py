@@ -167,7 +167,7 @@ def step_impl(context, xpath_expression, const):
         if val == const:
             msg = '`{}` is {}'.format(
                 xpath_expression,
-                val,
+                const,
             )
             raise StepException(context, msg)
     assert(True)
