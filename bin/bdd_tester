@@ -14,7 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--feature', help='path(s) to test files', action='append', dest='features')
     parser.add_argument('-o', '--output', help='output path for results', dest='output_path')
     parser.add_argument('-t', '--today', metavar='DATE', help='specify a date to be used as today\'s date (YYYY-MM-DD)')
-    parser.add_argument('--logging-level', help='Specify a level to capture logging at. The default is INFO - capturing everything.', default='INFO', dest='logging_level')
+    parser.add_argument('--logging-level', help='Specify a level to capture logging at. The default is INFO - capturing everything.', dest='logging_level')
 
     args = vars(parser.parse_args())
     if args['features'] == []:

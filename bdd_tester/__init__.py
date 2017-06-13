@@ -27,7 +27,7 @@ def bdd_tester(filepath, features, **kwargs):
     # but DO capture logging
     command_args.append('--logcapture')
     command_args += ['--logging-format', '%(levelname)s:%(message)s']
-    command_args += ['--logging-level', kwargs.get('logging_level')]
+    command_args += ['--logging-level', kwargs.get('logging_level', 'INFO')]
 
     # declare some custom formatters
     formatters = [
