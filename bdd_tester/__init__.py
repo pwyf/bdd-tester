@@ -20,6 +20,14 @@ def bdd_tester(filepath, features, **kwargs):
     # but we don't need this (since we do it ourselves)
     command_args.append('--no-capture')
 
+    # don't capture stderr either
+    command_args.append('--no-capture-stderr')
+
+    # but DO capture logging
+    command_args.append('--logcapture')
+    command_args += ['--logging-format', '%(levelname)s:%(message)s']
+    command_args += ['--logging-level', kwargs.get('logging_level')]
+
     # declare some custom formatters
     formatters = [
         'bdd_tester.formatters:DQSummaryFormatter',
