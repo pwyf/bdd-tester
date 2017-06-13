@@ -2,6 +2,7 @@ import json
 import sys
 
 from behave.configuration import Configuration
+from behave.formatter.base import StreamOpener
 from six import StringIO
 
 from bdd_tester.runner import DQRunner
@@ -53,13 +54,13 @@ def bdd_tester(filepath, features, **kwargs):
     # specify the location of the test files (features)
     command_args += features
 
-    if not save_summary:
-        # capture output
-        sys.stdout = StringIO()
-
     try:
         # create a config instance
         config = Configuration(command_args, load_config=False)
+
+        if not save_summary:
+            summary = StringIO()
+            config.outputs.insert(0, StreamOpener(stream=summary))
 
         # construct the runner!
         runner = DQRunner(config)
@@ -68,13 +69,9 @@ def bdd_tester(filepath, features, **kwargs):
         runner.start(filepath)
 
         if not save_summary:
-            result = sys.stdout
-            sys.stdout = sys.__stdout__
             # dump captured output
-            return json.loads(result.getvalue())
+            return json.loads(summary.getvalue())
     except:
         if not save_summary:
-            result = sys.stdout
-            sys.stdout = sys.__stdout__
-            print(result.getvalue())
+            print(summary.getvalue())
         raise
