@@ -59,6 +59,7 @@ def bdd_tester(filepath, features, **kwargs):
         config = Configuration(command_args, load_config=False)
 
         if not save_summary:
+            # summary formatter should output to a buffer
             summary = StringIO()
             config.outputs.insert(0, StreamOpener(stream=summary))
 
@@ -69,9 +70,10 @@ def bdd_tester(filepath, features, **kwargs):
         runner.start(filepath)
 
         if not save_summary:
-            # dump captured output
+            # dump summary formatter buffer
             return json.loads(summary.getvalue())
     except:
         if not save_summary:
+            # something went wrong; dump summary formatter buffer
             print(summary.getvalue())
         raise
