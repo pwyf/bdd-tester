@@ -38,7 +38,11 @@ class DQRunner(Runner):
         else:
             self.context.filetype = 'activity'
             # otherwise, set the activities
-            self.context.activities = doc.xpath('//iati-activity')
+            condition = self.context.config.userdata.get('condition')
+            if condition:
+                self.context.activities = doc.xpath('//iati-activity/{}'.format(condition))
+            else:
+                self.context.activities = doc.xpath('//iati-activity')
             self.context.organisation = None
 
         # [monkeypatched]

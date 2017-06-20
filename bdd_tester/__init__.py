@@ -47,6 +47,14 @@ def bdd_tester(filepath, features, **kwargs):
         output_path = default_output_path
     command_args += ['--define', 'output_path=' + output_path]
 
+    condition = kwargs.get('condition')
+    if condition:
+        condition_parts = condition.split('/')
+        go_backs = len([x for x in condition_parts if x == '..'])
+        condition_parts = condition_parts + ['..'] * (len(condition_parts) - 2 * go_backs)
+        condition = '/'.join(condition_parts)
+        command_args += ['--define', 'condition=' + condition]
+
     save_summary = kwargs.get('save_summary', False)
     if save_summary:
         # specify the summary formatter output filename

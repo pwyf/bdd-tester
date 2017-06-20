@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Write IATI data tests in gherkin.')
     parser.add_argument('filepath', help='IATI XML file to test')
     parser.add_argument('-f', '--feature', help='path(s) to test files. Defaults to ' + default_feature_paths[0], action='append', dest='features')
+    parser.add_argument('-c', '--condition', help='an XPath expression with which to filter IATI data.', dest='condition')
     parser.add_argument('-o', '--output', help='output path for results', dest='output_path')
     parser.add_argument('-t', '--today', metavar='DATE', help='specify a date to be used as today\'s date (YYYY-MM-DD)')
     parser.add_argument('--logging-level', help='Specify a level to capture logging at. The default is INFO - capturing everything.', dest='logging_level')
