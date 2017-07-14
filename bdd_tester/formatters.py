@@ -59,6 +59,7 @@ class DQSummaryFormatter(Formatter):
         if not scenario._row or scenario._row.index == 1:
             self.scenario_name = get_scenario_name(scenario)
 
+
 class DQLogFormatter(Formatter):
     name = 'dq_log'
     description = 'DQ log formatter'
