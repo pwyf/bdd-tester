@@ -1,7 +1,8 @@
 from datetime import date, datetime
+from os.path import dirname, join
 
 from behave.formatter._registry import make_formatters
-from behave.runner import Runner, Context
+from behave.runner import Runner, Context, exec_file
 from behave.runner_util import parse_features, print_undefined_step_snippets
 from behave.model import Examples, ScenarioOutline, Table
 from lxml import etree
@@ -77,3 +78,8 @@ class DQRunner(Runner):
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
+
+    def load_hooks(self):
+        # load environment.py from here - not steps directory
+        path_to_env = join(dirname(__file__), 'environment.py')
+        exec_file(path_to_env, self.hooks)
