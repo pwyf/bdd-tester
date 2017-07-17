@@ -52,7 +52,6 @@ class DQRunner(Runner):
                                           colored=self.config.color)
 
     def run_with_paths(self):
-        # [monkeypatched]
         self.load_hooks()
         self.load_step_definitions()
         feature_locations = [ filename for filename in self.feature_locations()
@@ -75,7 +74,6 @@ class DQRunner(Runner):
                         scenario.examples.append(examples)
         self.features.extend(features)
 
-        # [monkeypatched]
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
