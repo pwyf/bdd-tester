@@ -23,7 +23,7 @@ bdd_tester [IATI XML File]
 …Or run a specific test/set of tests with e.g.:
 
 ```shell
-bdd_tester --feature features/iati_standard_ruleset [IATI XML File]
+bdd_tester --feature sample_features/iati_standard_ruleset [IATI XML File]
 ```
 
 For more options, run:
