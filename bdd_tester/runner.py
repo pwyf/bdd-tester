@@ -5,11 +5,10 @@ from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context, exec_file
 from behave.runner_util import parse_features, print_undefined_step_snippets
 from behave.model import Examples, ScenarioOutline, Table
-from lxml import etree
 
 
 class DQRunner(Runner):
-    def start(self, filepath):
+    def start(self, doc):
         # initialise context.
         # [monkeypatched]
         self.context = Context(self)
@@ -20,14 +19,6 @@ class DQRunner(Runner):
             self.context.today = datetime.strptime(today_str, '%Y-%m-%d').date()
         else:
             self.context.today = date.today()
-
-        # parse the IATI XML
-        try:
-            doc = etree.parse(filepath)
-        except OSError:
-            raise Exception('{} is not a valid XML file'.format(filepath))
-        except etree.XMLSyntaxError as e:
-            raise Exception('Failed trying to parse {}'.format(filepath))
 
         # add IATI XML data to context
         organisations = doc.xpath('//iati-organisation')

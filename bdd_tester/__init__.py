@@ -3,6 +3,7 @@ import sys
 
 from behave.configuration import Configuration
 from behave.formatter.base import StreamOpener
+from lxml import etree
 from six import StringIO
 
 from bdd_tester.runner import DQRunner
@@ -75,8 +76,16 @@ def bdd_tester(filepath, features, **kwargs):
         # construct the runner!
         runner = DQRunner(config)
 
+        # parse the IATI XML
+        try:
+            doc = etree.parse(filepath)
+        except OSError:
+            raise Exception('{} is not a valid XML file'.format(filepath))
+        except etree.XMLSyntaxError as e:
+            raise Exception('Failed trying to parse {}'.format(filepath))
+
         # get this show on the road
-        runner.start(filepath)
+        runner.start(doc)
 
         if not save_summary:
             # dump summary formatter buffer
