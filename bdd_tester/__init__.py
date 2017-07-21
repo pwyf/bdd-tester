@@ -9,7 +9,7 @@ from six import StringIO
 from bdd_tester.runner import DQRunner
 
 
-def bdd_tester(filepath, features, **kwargs):
+def bdd_tester(**kwargs):
     default_output_path = 'output'
 
     # we'll add the behave args to this list
@@ -62,7 +62,7 @@ def bdd_tester(filepath, features, **kwargs):
         command_args += ['--outfile', 'summary.output']
 
     # specify the location of the test files (features)
-    command_args += features
+    command_args += kwargs.get('features')
 
     try:
         # create a config instance
@@ -77,12 +77,16 @@ def bdd_tester(filepath, features, **kwargs):
         runner = DQRunner(config)
 
         # parse the IATI XML
-        try:
-            doc = etree.parse(filepath)
-        except OSError:
-            raise Exception('{} is not a valid XML file'.format(filepath))
-        except etree.XMLSyntaxError as e:
-            raise Exception('Failed trying to parse {}'.format(filepath))
+        filepath = kwargs.get('filepath')
+        if filepath:
+            try:
+                doc = etree.parse(filepath)
+            except OSError:
+                raise Exception('{} is not a valid XML file'.format(filepath))
+            except etree.XMLSyntaxError as e:
+                raise Exception('Failed trying to parse {}'.format(filepath))
+        else:
+            doc = kwargs.get('etree')
 
         # get this show on the road
         runner.start(doc)

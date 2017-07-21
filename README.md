@@ -37,5 +37,5 @@ bdd_tester --help
 ```python
 from bdd_tester import bdd_tester
 
-bdd_tester(xml_file, features, **kwargs)
+bdd_tester(**kwargs)
 ```
