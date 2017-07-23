@@ -22,6 +22,7 @@ class DQRunner(Runner):
 
         # add IATI XML data to context
         organisations = doc.xpath('//iati-organisation')
+        self.context.meta = doc.getroot().attrib
         if len(organisations) > 0:
             self.context.filetype = 'org'
             # if this looks like an org file, set the organisation
