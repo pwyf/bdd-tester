@@ -1,11 +1,17 @@
+import json
+
+
 class StepException(Exception):
-    def __init__(self, context, message=''):
-        self.message = message
+    def __init__(self, context, errors=''):
+        self.errors = errors
+        self.id = ''
         try:
-            id_ = context.xml.xpath('iati-identifier/text()')[0]
-            self.message = '{}: {}'.format(id_, self.message)
+            self.id = context.xml.xpath('iati-identifier/text()')[0]
         except:
             pass
 
     def __str__(self):
-        return self.message
+        return json.dumps({
+            'errors': self.errors,
+            'id': self.id,
+        })
