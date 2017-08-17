@@ -25,7 +25,8 @@ def step_match_regex(context, xpath_expression, regex_str):
     if not success:
         verb = 'does' if len(bad_vals) == 1 else 'do'
         errors = [{
-            'message': '{} {} not match the regex `{}`'.format(', '.join(bad_vals), verb, regex_str),
+            'message': '{} {} not match the regex `{}`'.format(', '.join(bad_vals),
+                                                               verb, regex_str),
             'path': xpath_expression
         }]
         raise StepException(context, errors)
