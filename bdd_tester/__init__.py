@@ -1,5 +1,4 @@
 import json
-import sys
 
 from behave.configuration import Configuration
 from behave.formatter.base import StreamOpener
@@ -34,7 +33,7 @@ def bdd_tester(**kwargs):
     # declare some custom formatters
     formatters = [
         'bdd_tester.formatters:DQSummaryFormatter',
-        'bdd_tester.formatters:DQLogFormatter',
+        'bdd_tester.formatters:DQJSONFormatter',
     ]
     for formatter in formatters:
         command_args += ['--format', formatter]
@@ -83,7 +82,7 @@ def bdd_tester(**kwargs):
                 doc = etree.parse(filepath)
             except OSError:
                 raise Exception('{} is not a valid XML file'.format(filepath))
-            except etree.XMLSyntaxError as e:
+            except etree.XMLSyntaxError:
                 raise Exception('Failed trying to parse {}'.format(filepath))
         else:
             doc = kwargs.get('etree')

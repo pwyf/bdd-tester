@@ -47,8 +47,8 @@ class DQRunner(Runner):
     def run_with_paths(self):
         self.load_hooks()
         self.load_step_definitions()
-        feature_locations = [ filename for filename in self.feature_locations()
-                                    if not self.config.exclude(filename) ]
+        feature_locations = [filename for filename in self.feature_locations()
+                             if not self.config.exclude(filename)]
         features = parse_features(feature_locations, language=self.config.lang)
 
         # Hack to run the scenario once for each activity

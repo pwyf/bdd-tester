@@ -10,7 +10,8 @@ class StepException(Exception):
         except:
             pass
 
-    def __str__(self):
+    @property
+    def json_output(self):
         return json.dumps({
             'errors': self.errors,
             'id': self.id,
