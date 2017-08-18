@@ -7,7 +7,3 @@ Feature: Sector
   Scenario Outline: If sector is present, transaction/sector should not be
     Given `sector` is present
      then `transaction/sector` should not be present
-
-  Scenario Outline: If transaction/sector is present, sector should not be
-    Given `transaction/sector` is present
-     then `sector` should not be present
