@@ -1,5 +1,5 @@
 import json
-import sys
+import os
 
 from behave.configuration import Configuration
 from behave.formatter.base import StreamOpener
@@ -10,7 +10,11 @@ from bdd_tester.runner import DQRunner
 
 
 def bdd_tester(**kwargs):
+    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     default_output_path = 'output'
+    default_version = '2'  # IATI major latest version
+    default_features = os.path.join(parent_dir, 'iati_features', 'iati_common_ruleset/')
 
     # we'll add the behave args to this list
     command_args = []
@@ -61,8 +65,15 @@ def bdd_tester(**kwargs):
         # specify the summary formatter output filename
         command_args += ['--outfile', 'summary.output']
 
-    # specify the location of the test files (features)
-    command_args += kwargs.get('features')
+    # specify standard version and location of test files (features)
+    version = kwargs.get('version') or default_version
+    features = kwargs.get('features')
+    if not features:
+        version_features = os.path.join(parent_dir, 'iati_features',
+                                        'iati_v{}_ruleset/'.format(version))
+        features = [default_features, version_features]
+
+    command_args += features
 
     try:
         # create a config instance
@@ -83,7 +94,7 @@ def bdd_tester(**kwargs):
                 doc = etree.parse(filepath)
             except OSError:
                 raise Exception('{} is not a valid XML file'.format(filepath))
-            except etree.XMLSyntaxError as e:
+            except etree.XMLSyntaxError:
                 raise Exception('Failed trying to parse {}'.format(filepath))
         else:
             doc = kwargs.get('etree')
