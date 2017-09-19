@@ -38,7 +38,7 @@ def bdd_tester(**kwargs):
     # declare some custom formatters
     formatters = [
         'bdd_tester.formatters:DQSummaryFormatter',
-        'bdd_tester.formatters:DQLogFormatter',
+        'bdd_tester.formatters:DQJSONFormatter',
     ]
     for formatter in formatters:
         command_args += ['--format', formatter]
