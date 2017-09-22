@@ -62,9 +62,10 @@ class DQSummaryFormatter(Formatter):
 class DQJSONFormatter(Formatter):
     '''Produce json output files containing a single array of JSON objects
 
-    This formatter outputs one json file per scenario. Each file contains
-    a json dump of an array of json objects. Each object contains the rule
-    error paths for individual ids (activities) for the given scenario.
+
+    This formatter outputs one json file per scenario. Each file contains a json dump of
+    an array of json objects. Each object contains the rule error paths for individual ids
+    (activities) for the given scenario.
     '''
     name = 'dq_json'
     description = 'DQ JSON formatter'
@@ -99,7 +100,8 @@ class DQJSONFormatter(Formatter):
             # set the new output filename, but don't open
             # the stream until we have some results
             scenario_name = get_scenario_name(scenario)
-            slugified_name = scenario_name.lower().replace(' ', '_')
+            slugified_name = ''.join(c for c in scenario_name.lower().strip().replace(' ', '_') if c.isalnum() or c == '_')
+
             self.output_file = '{}.json'.format(
                 join(self.output_path, slugified_name)
             )
