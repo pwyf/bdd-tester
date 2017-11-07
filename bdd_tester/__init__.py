@@ -1,5 +1,5 @@
 import json
-import os
+from os.path import abspath, dirname, join
 
 from behave.configuration import Configuration
 from behave.formatter.base import StreamOpener
@@ -10,11 +10,12 @@ from bdd_tester.runner import DQRunner
 
 
 def bdd_tester(**kwargs):
-    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    parent_dir = dirname(dirname(abspath(__file__)))
 
     default_output_path = 'output'
     default_version = '2'  # IATI major latest version
-    default_features = os.path.join(parent_dir, 'iati_features', 'iati_common_ruleset/')
+    default_features = join(parent_dir, 'iati_features',
+                            'iati_common_ruleset')
 
     # we'll add the behave args to this list
     command_args = []
@@ -56,7 +57,8 @@ def bdd_tester(**kwargs):
     if condition:
         condition_parts = condition.split('/')
         go_backs = len([x for x in condition_parts if x == '..'])
-        condition_parts = condition_parts + ['..'] * (len(condition_parts) - 2 * go_backs)
+        condition_parts = condition_parts + \
+            ['..'] * (len(condition_parts) - 2 * go_backs)
         condition = '/'.join(condition_parts)
         command_args += ['--define', 'condition=' + condition]
 
@@ -69,8 +71,8 @@ def bdd_tester(**kwargs):
     version = kwargs.get('version') or default_version
     features = kwargs.get('features')
     if not features:
-        version_features = os.path.join(parent_dir, 'iati_features',
-                                        'iati_v{}_ruleset/'.format(version))
+        version_features = join(parent_dir, 'iati_features',
+                                'iati_v{}_ruleset'.format(version))
         features = [default_features, version_features]
 
     command_args += features

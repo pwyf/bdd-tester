@@ -11,7 +11,7 @@ six==1.10.0
 
 setup(
     name='bdd-tester',
-    packages = find_packages(),
+    packages=find_packages(),
     scripts=[join('bin', 'bdd_tester')],
     install_requires=requirements.strip().splitlines(),
 )

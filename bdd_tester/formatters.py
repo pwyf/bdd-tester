@@ -17,7 +17,8 @@ class DQSummaryFormatter(Formatter):
 
         if stream_opener.name:
             # setup output file
-            output_file = join(config.userdata['output_path'], stream_opener.name)
+            output_file = join(config.userdata['output_path'],
+                               stream_opener.name)
             self.stream_opener = StreamOpener(output_file)
             self.stream = self.open()
 
@@ -62,9 +63,9 @@ class DQSummaryFormatter(Formatter):
 class DQJSONFormatter(Formatter):
     '''Produce json output files containing a single array of JSON objects
 
-    This formatter outputs one json file per scenario. Each file contains a json dump of
-    an array of json objects. Each object contains the rule error paths for individual ids
-    (activities) for the given scenario.
+    This formatter outputs one json file per scenario. Each file contains
+    a json dump of an array of json objects. Each object contains the rule
+    error paths for individual ids (activities) for the given scenario.
     '''
     name = 'dq_json'
     description = 'DQ JSON formatter'
@@ -89,6 +90,11 @@ class DQJSONFormatter(Formatter):
                 self.stream.write(',{}'.format(step.exception.json_output))
 
     def scenario(self, scenario):
+        def slugify(inp):
+            out = inp.lower().strip().replace(' ', '_')
+            out = ''.join(c for c in out if c.isalnum() or c == '_')
+            return out
+
         if not scenario._row or scenario._row.index == 1:
             if self.output_file_open:
                 # tail of file
@@ -99,7 +105,7 @@ class DQJSONFormatter(Formatter):
             # set the new output filename, but don't open
             # the stream until we have some results
             scenario_name = get_scenario_name(scenario)
-            slugified_name = ''.join(c for c in scenario_name.lower().strip().replace(' ', '_') if c.isalnum() or c == '_')
+            slugified_name = slugify(scenario_name)
             self.output_file = '{}.json'.format(
                 join(self.output_path, slugified_name)
             )

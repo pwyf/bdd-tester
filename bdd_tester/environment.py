@@ -1,5 +1,4 @@
 from os.path import join
-import json
 
 
 def before_scenario(context, scenario):
@@ -12,8 +11,10 @@ def before_scenario(context, scenario):
     else:
         context.xml = context.organisation
 
+
 def after_scenario(context, scenario):
     if context.log_capture:
         logs = context.log_capture.getvalue()
-        with open(join(context.config.userdata['output_path'], 'log.output'), 'w') as f:
+        log_file = join(context.config.userdata['output_path'], 'log.output')
+        with open(log_file, 'w') as f:
             f.write(logs)

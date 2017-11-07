@@ -16,7 +16,8 @@ class DQRunner(Runner):
         # setup 'today' date and add to context
         today_str = self.context.config.userdata.get('today')
         if today_str:
-            self.context.today = datetime.strptime(today_str, '%Y-%m-%d').date()
+            self.context.today = datetime.strptime(
+                today_str, '%Y-%m-%d').date()
         else:
             self.context.today = date.today()
 
@@ -33,7 +34,8 @@ class DQRunner(Runner):
             # otherwise, set the activities
             condition = self.context.config.userdata.get('condition')
             if condition:
-                self.context.activities = doc.xpath('//iati-activity/{}'.format(condition))
+                self.context.activities = doc.xpath(
+                    '//iati-activity/{}'.format(condition))
             else:
                 self.context.activities = doc.xpath('//iati-activity')
             self.context.organisation = None
@@ -54,7 +56,9 @@ class DQRunner(Runner):
         # Hack to run the scenario once for each activity
         if self.context.filetype == 'activity':
             activities = self.context.activities
-            rows = [['Activity {}'.format(idx)] for idx, _ in enumerate(activities)]
+            rows = [
+                ['Activity {}'.format(idx)] for idx, _ in enumerate(activities)
+            ]
             table = Table(
                 ['activity name'],
                 line=0,
