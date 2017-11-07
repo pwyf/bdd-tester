@@ -89,12 +89,19 @@ class DQJSONFormatter(Formatter):
                 # append json output to the streamed file
                 self.stream.write(',{}'.format(step.exception.json_output))
 
-    def scenario(self, scenario):
+    def _set_output_file(self, scenario):
         def slugify(inp):
             out = inp.lower().strip().replace(' ', '_')
             out = ''.join(c for c in out if c.isalnum() or c == '_')
             return out
 
+        scenario_name = get_scenario_name(scenario)
+        slugified_name = slugify(scenario_name)
+        self.output_file = '{}.json'.format(
+            join(self.output_path, slugified_name)
+        )
+
+    def scenario(self, scenario):
         if not scenario._row or scenario._row.index == 1:
             if self.output_file_open:
                 # tail of file
@@ -104,11 +111,7 @@ class DQJSONFormatter(Formatter):
 
             # set the new output filename, but don't open
             # the stream until we have some results
-            scenario_name = get_scenario_name(scenario)
-            slugified_name = slugify(scenario_name)
-            self.output_file = '{}.json'.format(
-                join(self.output_path, slugified_name)
-            )
+            self._set_output_file(scenario)
 
     def close_stream(self):
         if self.stream:
