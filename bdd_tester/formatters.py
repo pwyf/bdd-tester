@@ -74,6 +74,7 @@ class DQJSONFormatter(Formatter):
         super(DQJSONFormatter, self).__init__(stream_opener, config)
         self.output_path = config.userdata['output_path']
         self.output_file_open = False
+        self.default_stream_open = True
 
     def result(self, step):
         if step.step_type == 'then':
@@ -103,7 +104,13 @@ class DQJSONFormatter(Formatter):
 
     def scenario(self, scenario):
         if not scenario._row or scenario._row.index == 1:
-            if self.output_file_open:
+            if self.default_stream_open:
+                # this formatter overrides default behaviour by
+                # always writing to a file. As such, we have
+                # to do a little jiggery pokery to get it to work.
+                self.close()
+                self.default_stream_open = False
+            elif self.output_file_open:
                 # tail of file
                 self.stream.write(']')
                 self.close()
