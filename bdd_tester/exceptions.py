@@ -2,6 +2,9 @@ import json
 
 
 class StepException(Exception):
+    def __str__(self):
+        return self.errors
+
     def __init__(self, context, errors=''):
         self.errors = errors
         self.id = ''
