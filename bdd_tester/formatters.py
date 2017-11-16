@@ -3,6 +3,8 @@ import json
 
 from behave.formatter.base import Formatter, StreamOpener
 
+from . import exceptions
+
 
 def get_scenario_name(scenario):
     return scenario.name.split(' -- ')[0]
@@ -84,11 +86,15 @@ class DQJSONFormatter(Formatter):
                     self.stream_opener = StreamOpener(self.output_file)
                     self.open()
                     # start of file
-                    self.stream.write('[{}'.format(step.exception.json_output))
+                    self.stream.write('[')
                     self.output_file_open = True
-
-                # append json output to the streamed file
-                self.stream.write(',{}'.format(step.exception.json_output))
+                else:
+                    # append json output to the streamed file
+                    self.stream.write(',')
+                if type(step.exception) is exceptions.StepException:
+                    self.stream.write(step.exception.json_output)
+                else:
+                    raise step.exception
 
     def _set_output_file(self, scenario):
         def slugify(inp):
