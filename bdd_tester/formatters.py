@@ -119,8 +119,3 @@ class DQJSONFormatter(Formatter):
             # set the new output filename, but don't open
             # the stream until we have some results
             self._set_output_file(scenario)
-
-    def close_stream(self):
-        if self.stream:
-            self.stream_opener.close()
-        self.stream = None
