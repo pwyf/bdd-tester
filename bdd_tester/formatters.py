@@ -128,3 +128,37 @@ class DQJSONFormatter(Formatter):
             self.close()
             self.output_file_open = False
             self.results_outputted = False
+
+
+# class DQCSVFormatter(Formatter):
+#     name = 'dq_csv'
+#     description = 'DQ CSV formatter'
+
+#     def __init__(self, stream_opener, config):
+#         super(DQCSVFormatter, self).__init__(stream_opener, config)
+#         # setup the output filepath
+#         self.output_path = config.userdata['output_path']
+#         self.close()
+
+#     def result(self, step):
+#         if step.step_type == 'then':
+#             if step.status == 'failed':
+#                 # log the exception
+#                 self.stream.write(str(step.exception) + '\n')
+
+#     def _set_output_file(self, scenario):
+#         # set the new output filename, but don't open
+#         # the stream until we have some results
+#         scenario_name = get_scenario_name(scenario)
+#         slugified_name = slugify(scenario_name)
+#         self.output_file = '{}.csv'.format(
+#             join(self.output_path, slugified_name)
+#         )
+#         # open a new output filestream
+#         self.stream_opener = StreamOpener(self.output_file)
+#         self.open()
+
+#     def scenario(self, scenario):
+#         if not scenario._row or scenario._row.index == 1:
+#             self.close()
+#             self._set_output_file(scenario)
