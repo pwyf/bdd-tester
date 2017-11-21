@@ -74,25 +74,22 @@ class DQJSONFormatter(Formatter):
 
     def __init__(self, stream_opener, config):
         super(DQJSONFormatter, self).__init__(stream_opener, config)
+        # immediately close the default stream,
+        # since we don't use it at all
         self.close()
         self.output_path = config.userdata['output_path']
         self.output_file_open = False
+        self.results_outputted = False
 
     def result(self, step):
         if step.step_type == 'then':
             if step.status == 'failed':
-                if not self.output_file_open:
-                    # open a new output filestream
-                    self.stream_opener = StreamOpener(self.output_file)
-                    self.open()
-                    # start of file
-                    self.stream.write('[')
-                    self.output_file_open = True
-                else:
+                if self.results_outputted:
                     # append json output to the streamed file
                     self.stream.write(',')
                 if type(step.exception) is exceptions.StepException:
                     self.stream.write(step.exception.json_output)
+                    self.results_outputted = True
                 else:
                     raise step.exception
 
@@ -111,11 +108,23 @@ class DQJSONFormatter(Formatter):
     def scenario(self, scenario):
         if not scenario._row or scenario._row.index == 1:
             if self.output_file_open:
-                # tail of file
+                # close the previous scenario
                 self.stream.write(']')
                 self.close()
-                self.output_file_open = False
 
-            # set the new output filename, but don't open
-            # the stream until we have some results
+            # set the new output filename
             self._set_output_file(scenario)
+            # open a new output filestream
+            self.stream_opener = StreamOpener(self.output_file)
+            self.open()
+            # start of file
+            self.stream.write('[')
+            self.output_file_open = True
+            self.results_outputted = False
+
+    def eof(self):
+        if self.output_file_open:
+            self.stream.write(']')
+            self.close()
+            self.output_file_open = False
+            self.results_outputted = False
