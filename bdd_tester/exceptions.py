@@ -16,6 +16,6 @@ class StepException(Exception):
     @property
     def json_output(self):
         return json.dumps({
-            'errors': self.errors,
             'id': self.id,
+            'errors': self.errors,
         })
