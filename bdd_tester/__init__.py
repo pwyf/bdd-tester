@@ -37,10 +37,13 @@ def bdd_tester(**kwargs):
         command_args += ['--logging-level', kwargs.get('logging_level')]
 
     # declare some custom formatters
-    formatters = [
-        'bdd_tester.formatters:DQSummaryFormatter',
-        'bdd_tester.formatters:DQJSONFormatter',
-    ]
+    if kwargs.get('formatters'):
+        formatters = kwargs.get('formatters')
+    else:
+        formatters = [
+            'bdd_tester.formatters:DQSummaryFormatter',
+            'bdd_tester.formatters:DQJSONFormatter',
+        ]
     for formatter in formatters:
         command_args += ['--format', formatter]
 
