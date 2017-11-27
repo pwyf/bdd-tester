@@ -1,5 +1,6 @@
-from os.path import join
+import csv
 import json
+from os.path import join
 
 from behave.formatter.base import Formatter, StreamOpener
 
@@ -8,6 +9,12 @@ from . import exceptions
 
 def get_scenario_name(scenario):
     return scenario.name.split(' -- ')[0]
+
+
+def slugify(inp):
+    out = inp.lower().strip().replace(' ', '_')
+    out = ''.join(c for c in out if c.isalnum() or c == '_')
+    return out
 
 
 class DQSummaryFormatter(Formatter):
@@ -94,11 +101,6 @@ class DQJSONFormatter(Formatter):
                     raise step.exception
 
     def _set_output_file(self, scenario):
-        def slugify(inp):
-            out = inp.lower().strip().replace(' ', '_')
-            out = ''.join(c for c in out if c.isalnum() or c == '_')
-            return out
-
         scenario_name = get_scenario_name(scenario)
         slugified_name = slugify(scenario_name)
         self.output_file = '{}.json'.format(
@@ -116,7 +118,7 @@ class DQJSONFormatter(Formatter):
             self._set_output_file(scenario)
             # open a new output filestream
             self.stream_opener = StreamOpener(self.output_file)
-            self.open()
+            self.stream = self.open()
             # start of file
             self.stream.write('[')
             self.output_file_open = True
@@ -130,35 +132,48 @@ class DQJSONFormatter(Formatter):
             self.results_outputted = False
 
 
-# class DQCSVFormatter(Formatter):
-#     name = 'dq_csv'
-#     description = 'DQ CSV formatter'
+class DQCSVFormatter(Formatter):
+    name = 'dq_csv'
+    description = 'DQ CSV formatter'
 
-#     def __init__(self, stream_opener, config):
-#         super(DQCSVFormatter, self).__init__(stream_opener, config)
-#         # setup the output filepath
-#         self.output_path = config.userdata['output_path']
-#         self.close()
+    def __init__(self, stream_opener, config):
+        super(DQCSVFormatter, self).__init__(stream_opener, config)
+        # immediately close the default stream,
+        # since we don't use it at all
+        self.close()
+        self.output_path = config.userdata['output_path']
+        self.output_file_open = False
 
-#     def result(self, step):
-#         if step.step_type == 'then':
-#             if step.status == 'failed':
-#                 # log the exception
-#                 self.stream.write(str(step.exception) + '\n')
+    def result(self, step):
+        if step.step_type == 'then':
+            if step.status == 'failed':
+                if type(step.exception) is exceptions.StepException:
+                    j = json.loads(step.exception.json_output)
+                    self.csv_writer.writerow([j['id'], j['errors']])
+                else:
+                    raise step.exception
 
-#     def _set_output_file(self, scenario):
-#         # set the new output filename, but don't open
-#         # the stream until we have some results
-#         scenario_name = get_scenario_name(scenario)
-#         slugified_name = slugify(scenario_name)
-#         self.output_file = '{}.csv'.format(
-#             join(self.output_path, slugified_name)
-#         )
-#         # open a new output filestream
-#         self.stream_opener = StreamOpener(self.output_file)
-#         self.open()
+    def _set_output_file(self, scenario):
+        scenario_name = get_scenario_name(scenario)
+        slugified_name = slugify(scenario_name)
+        self.output_file = '{}.csv'.format(
+            join(self.output_path, slugified_name)
+        )
 
-#     def scenario(self, scenario):
-#         if not scenario._row or scenario._row.index == 1:
-#             self.close()
-#             self._set_output_file(scenario)
+    def scenario(self, scenario):
+        if not scenario._row or scenario._row.index == 1:
+            if self.output_file_open:
+                self.close()
+            # set the new output filename
+            self._set_output_file(scenario)
+            # open a new output filestream
+            self.stream_opener = StreamOpener(self.output_file)
+            self.stream = self.open()
+            self.output_file_open = True
+            self.csv_writer = csv.writer(self.stream)
+            self.csv_writer.writerow(['IATI Identifier', 'Message'])
+
+    def eof(self):
+        if self.output_file_open:
+            self.close()
+            self.output_file_open = False
