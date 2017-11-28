@@ -57,14 +57,14 @@ class DQRunner(Runner):
         if self.context.filetype == 'activity':
             activities = self.context.activities
             rows = [
-                ['Activity {}'.format(idx)] for idx, _ in enumerate(activities)
+                [u'Activity {}'.format(idx)] for idx, _ in enumerate(activities)
             ]
             table = Table(
-                ['activity name'],
+                [u'activity name'],
                 line=0,
                 rows=rows,
             )
-            examples = Examples('', 0, 'Example', 'Activity', table=table)
+            examples = Examples(u'', 0, u'Example', u'Activity', table=table)
             for feature in features:
                 for scenario in feature.scenarios:
                     if type(scenario) is ScenarioOutline:
