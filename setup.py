@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 
 
 requirements = """
-behave==1.2.5
 lxml==3.7.1
 requests==2.14.2
+gherkin-official==4.1.3
 six==1.10.0
 """
 
