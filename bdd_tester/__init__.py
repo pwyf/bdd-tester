@@ -8,7 +8,7 @@ from lxml import etree
 from . import utils
 
 
-def bdd_tester(step_definitions_path, feature_path, **kwargs):
+def bdd_tester(step_definitions_path, features, **kwargs):
     default_output_path = 'output'
     if kwargs.get('output_path'):
         output_path = kwargs.get('output_path')
@@ -30,7 +30,7 @@ def bdd_tester(step_definitions_path, feature_path, **kwargs):
         'today': kwargs.get('today', datetime.today()),
         'codelists': kwargs.get('codelists', {}),
     }
-    features = utils.load_features(feature_path, **test_related_kwargs)
+    features = utils.load_features(features, **test_related_kwargs)
 
     # parse the XML
     filepath = kwargs.get('filepath')

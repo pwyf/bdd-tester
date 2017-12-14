@@ -1,6 +1,4 @@
 import re
-from glob import glob
-from os.path import join
 
 from gherkin.parser import Parser as GherkinParser
 
@@ -53,19 +51,18 @@ def parse(ctx, **kwargs):
     return _parse
 
 
-def gherkinify(feature_path):
+def gherkinify(features):
     gherkins = []
-    feature_files = glob(join(feature_path, '**', '*.feature'), recursive=True)
     parser = GherkinParser()
-    for feature_file in feature_files:
+    for feature_file in features:
         with open(feature_file, 'rb') as f:
             data = f.read().decode('utf8')
         gherkins.append(parser.parse(data))
     return gherkins
 
 
-def load_features(feature_path, **kwargs):
-    features = gherkinify(feature_path)
+def load_features(features, **kwargs):
+    features = gherkinify(features)
 
     out = []
     for feature in features:
