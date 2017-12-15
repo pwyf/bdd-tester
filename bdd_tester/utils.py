@@ -67,8 +67,10 @@ def load_features(features, **kwargs):
             test_name = test['name']
             test_steps = test['steps']
             ctx = []
+            step_type = 'given'
             for step in test_steps:
-                step_type = step['keyword'].lower().strip()
+                if step['keyword'] == 'Then ':
+                    step_type = 'then'
                 expr_fn, expr_groups = find_matching_expr(
                     mappings, step['text'])
                 ctx.append((step_type, expr_fn, expr_groups))
