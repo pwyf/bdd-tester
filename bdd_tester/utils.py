@@ -33,10 +33,7 @@ def parse(ctx, **kwargs):
         for step_type, expr_fn, expr_groups in ctx:
             result = True
             try:
-                if expr_groups:
-                    expr_fn(activity, *expr_groups, **kwargs)
-                else:
-                    expr_fn(activity, **kwargs)
+                expr_fn(activity, *expr_groups, **kwargs)
             except Exception as e:
                 result = False
                 explain = str(e)
