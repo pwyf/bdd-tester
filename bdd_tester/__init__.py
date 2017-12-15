@@ -14,6 +14,7 @@ def bdd_tester(step_definitions_path, features, **kwargs):
         output_path = kwargs.get('output_path')
     else:
         output_path = default_output_path
+    filters = kwargs.get('filters', [])
 
     # condition = kwargs.get('condition')
     # if condition:
@@ -31,6 +32,7 @@ def bdd_tester(step_definitions_path, features, **kwargs):
         'codelists': kwargs.get('codelists', {}),
     }
     features = utils.load_features(features, **test_related_kwargs)
+    filters = utils.load_features(filters, **test_related_kwargs)
 
     # parse the XML
     filepath = kwargs.get('filepath')
@@ -44,6 +46,16 @@ def bdd_tester(step_definitions_path, features, **kwargs):
     else:
         doc = kwargs.get('etree')
     activities = doc.xpath('//iati-activity')
+
+    for test_name, test in filters:
+        filtered_activities = []
+        for activity in activities:
+            try:
+                utils.mappings[7][1](activity)
+            except:
+                continue
+            filtered_activities.append(activity)
+        activities = filtered_activities
 
     scores = {}
     for test_name, test in features:
