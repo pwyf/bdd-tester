@@ -3,15 +3,14 @@ import json
 
 class StepException(Exception):
     def __str__(self):
-        return self.errors
+        return self.msg
 
-    def __init__(self, context, errors=''):
-        self.errors = errors
-        self.id = ''
+    def __init__(self, xml, msg=''):
+        self.msg = msg
         try:
-            self.id = context.xml.xpath('iati-identifier/text()')[0]
+            self.id = xml.xpath('iati-identifier/text()')[0]
         except:
-            pass
+            self.id = ''
 
     @property
     def json_output(self):

@@ -17,13 +17,7 @@ pip install -r requirements.txt
 ## Run
 
 ```shell
-bdd_tester [IATI XML File]
-```
-
-…Or run a specific test/set of tests with e.g.:
-
-```shell
-bdd_tester --feature sample_features/iati_standard_ruleset [IATI XML File]
+bdd_tester --feature [Feature file] [IATI XML File]
 ```
 
 For more options, run:
@@ -32,10 +26,13 @@ For more options, run:
 bdd_tester --help
 ```
 
-## API
+## Using it programmatically
 
 ```python
 from bdd_tester import bdd_tester
 
-bdd_tester(**kwargs)
+
+tester = bdd_tester(path_to_step_definitions)
+feature = tester.load_feature(path_to_feature)
+result = feature.tests[0](data_to_test)
 ```
