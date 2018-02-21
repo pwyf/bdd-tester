@@ -29,7 +29,12 @@ class Test:
     def __str__(self):
         return self.name
 
-    def __call__(self, activity, codelists={}, today=None):
+    def __call__(self, activity, codelists={}, today=None, verbose=False):
+        def output(res, msg):
+            if verbose:
+                return res, msg
+            return res
+
         if today:
             today = datetime.strptime(today, '%Y-%m-%d').date()
         else:
@@ -40,20 +45,20 @@ class Test:
         }
         for step in self.steps:
             result = True
+            explain = ''
             try:
                 step(activity, **kwargs)
             except StepException as e:
                 result = False
                 explain = str(e)
             if step.step_type == 'then':
-                if result:
-                    return True, ''
-                else:
-                    return False, explain
+                return output(result, explain)
             else:
                 if not result:
-                    return None, explain
+                    # failed conditional i.e. not relevant
+                    return output(None, explain)
                 else:
+                    # passed conditional
                     pass
 
 
