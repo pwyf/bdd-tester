@@ -52,7 +52,8 @@ class Test:
                 result = False
                 explain = str(e)
             if step.step_type == 'then':
-                return output(result, explain)
+                if result is False:
+                    return output(result, explain)
             else:
                 if not result:
                     # failed conditional i.e. not relevant
@@ -60,6 +61,7 @@ class Test:
                 else:
                     # passed conditional
                     pass
+        return output(True, '')
 
 
 class Step:
