@@ -1,16 +1,22 @@
-from os.path import join
 from setuptools import setup, find_packages
+from os.path import abspath, dirname, join
 
 
-requirements = """
-lxml==4.2.5
-gherkin-official==4.1.3
-six==1.11.0
-"""
+path = abspath(dirname(__file__))
+with open(join(path, 'README.rst')) as f:
+    readme = f.read()
 
 setup(
     name='bdd-tester',
+    author='Andy Lulham',
+    author_email='a.lulham@gmail.com',
     packages=find_packages(),
     scripts=[join('bin', 'bdd_tester')],
-    install_requires=requirements.strip().splitlines(),
+    license='MIT',
+    long_description=readme,
+    install_requires=[
+        'lxml',
+        'gherkin-official',
+        'six',
+    ],
 )
