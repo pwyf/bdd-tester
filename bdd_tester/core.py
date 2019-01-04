@@ -1,7 +1,7 @@
 from gherkin.parser import Parser as GherkinParser
 import six
 
-from .exceptions import StepException
+from .exceptions import StepException, UnknownStepException
 
 
 if six.PY3:
@@ -73,7 +73,8 @@ class Step:
                 r = regex.match(line)
                 if r:
                     return fn, r.groups()
-            print('I didn\'t understand "{}"'.format(line))
+            msg = 'I didn\'t understand "{}"'.format(line)
+            raise UnknownStepException(msg)
 
         self.text = step_text
         self.step_type = step_type
