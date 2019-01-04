@@ -1,7 +1,3 @@
-from .utils import given, then
-from .exceptions import StepException
-
-
-def bdd_tester(stepfile_filepath):
-    from .core import BDDTester
-    return BDDTester(stepfile_filepath)
+from .utils import given, then  # noqa: F401
+from .exceptions import StepException  # noqa: F401
+from .core import BDDTester  # noqa: F401

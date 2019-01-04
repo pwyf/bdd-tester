@@ -2,7 +2,7 @@
 import argparse
 import sys
 
-from bdd_tester import bdd_tester
+from bdd_tester import BDDTester
 
 
 if __name__ == '__main__':
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     failed = False
     try:
-        bdd_tester(**args)
+        BDDTester(**args)
     except Exception as e:
         print(e)
         failed = True

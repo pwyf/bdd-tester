@@ -40,10 +40,10 @@ Using it programmatically
 
 .. code:: python
 
-    from bdd_tester import bdd_tester
+    from bdd_tester import BDDTester
 
 
-    tester = bdd_tester(path_to_step_definitions)
+    tester = BDDTester(path_to_step_definitions)
     feature = tester.load_feature(path_to_feature)
     result = feature.tests[0](data_to_test)
 
