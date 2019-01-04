@@ -89,7 +89,7 @@ class Step:
 
     def __call__(self, *args, **kwargs):
         if self.expr_groups:
-            args = [*args, *self.expr_groups]
+            args = args + self.expr_groups
         self.expr_fn(*args, **kwargs)
 
 
