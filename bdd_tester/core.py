@@ -95,8 +95,8 @@ class Step:
 
 
 class BDDTester:
-    def __init__(self, stepfile_filepath):
-        self._load_step_definitions(stepfile_filepath)
+    def __init__(self, step_path):
+        self._load_step_definitions(step_path)
         self.gherkinparser = GherkinParser()
 
     def _load_step_definitions(self, filepath):
