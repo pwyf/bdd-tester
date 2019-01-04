@@ -17,9 +17,9 @@ BDD Tester
     :alt: Test coverage
     :target: https://coveralls.io/github/pwyf/bdd-tester?branch=master
 
-Assess IATI data using `behaviour-driven
+Test data files using `behaviour-driven
 development <https://en.wikipedia.org/wiki/Behavior-driven_development>`__
-testing.
+tests, in python.
 
 Wait, what?
 -----------
@@ -43,7 +43,7 @@ Run
 
 .. code:: shell
 
-    bdd_tester --feature [Feature file] [IATI XML File]
+    bdd_tester --feature [Feature file] --steps [Step file] [Data file]
 
 For more options, run:
 
