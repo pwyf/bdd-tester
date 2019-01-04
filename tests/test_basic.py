@@ -1,6 +1,9 @@
 from os.path import abspath, dirname, join
 
+import pytest
+
 from bdd_tester import BDDTester
+from bdd_tester.exceptions import UnknownStepException
 
 
 EGGFUL_LIST = '''
@@ -42,6 +45,9 @@ def test_succeeds():
     assert success is True
     assert msg == ''
 
+    success = feature.tests[0](EGGFUL_LIST)
+    assert success is True
+
 
 def test_not_relevant():
     fixture_path = join(dirname(abspath(__file__)), 'fixtures')
@@ -61,3 +67,19 @@ def test_fails():
     success, msg = feature.tests[0](EGGLESS_LIST, bdd_verbose=True)
     assert success is False
     assert msg == '"Eggs" not found'
+
+
+def test_missing_step_definition():
+    fixture_path = join(dirname(abspath(__file__)), 'fixtures')
+
+    tester = BDDTester(join(fixture_path, 'steps.py'))
+    with pytest.raises(UnknownStepException):
+        tester.load_feature(join(fixture_path, 'bad_feature.feature'))
+
+
+def test_feature_repr():
+    fixture_path = join(dirname(abspath(__file__)), 'fixtures')
+
+    tester = BDDTester(join(fixture_path, 'steps.py'))
+    feature = tester.load_feature(join(fixture_path, 'feature.feature'))
+    assert repr(feature) == '<Feature (Shopping list tests)>'
