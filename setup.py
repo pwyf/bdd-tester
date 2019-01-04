@@ -17,6 +17,7 @@ setup(
     name='bdd-tester',
     author='Andy Lulham',
     author_email='a.lulham@gmail.com',
+    version='0.0.1',
     packages=find_packages(),
     scripts=[join('bin', 'bdd_tester')],
     license='MIT',
