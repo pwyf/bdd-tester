@@ -6,4 +6,5 @@ python:
 install:
   - pip install -r requirements_dev.txt
 script:
-  - python setup.py test
+  - coverage run --source bdd_tester setup.py test
+after_success: coveralls

@@ -8,6 +8,8 @@ with open(join(path, 'README.rst')) as f:
 
 test_deps = [
     'coveralls',
+    'pytest',
+    'pytest-cov',
 ]
 extras = {'test': test_deps}
 
@@ -17,7 +19,6 @@ setup(
     author_email='a.lulham@gmail.com',
     packages=find_packages(),
     scripts=[join('bin', 'bdd_tester')],
-    test_suite='tests',
     license='MIT',
     long_description=readme,
     install_requires=[
@@ -25,6 +26,7 @@ setup(
         'gherkin-official',
         'six',
     ],
+    setup_requires=['pytest-runner'],
     tests_require=test_deps,
     extras_require=extras,
 )

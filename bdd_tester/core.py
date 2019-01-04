@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from gherkin.parser import Parser as GherkinParser
 import six
 
@@ -20,6 +18,9 @@ class Feature:
     def __str__(self):
         return self.name
 
+    def __repr__(self):
+        return '<{} ({})>'.format(self.__class__.__name__, str(self))
+
 
 class Test:
     def __init__(self, name, steps):
@@ -29,25 +30,24 @@ class Test:
     def __str__(self):
         return self.name
 
-    def __call__(self, activity, codelists={}, today=None, verbose=False):
+    def __repr__(self):
+        return '<{} ({})>'.format(self.__class__.__name__, str(self))
+
+    def __call__(self, *args, **kwargs):
         def output(res, msg):
-            if verbose:
+            if kwargs.get('bdd_verbose'):
                 return res, msg
             return res
 
-        if today:
-            today = datetime.strptime(today, '%Y-%m-%d').date()
-        else:
-            today = datetime.today().date()
-        kwargs = {
-            'codelists': codelists,
-            'today': today,
-        }
+        context = dict(kwargs)
+        if 'bdd_verbose' in context:
+            del context['bdd_verbose']
+
         for step in self.steps:
             result = True
             explain = ''
             try:
-                step(activity, **kwargs)
+                step(*args, **context)
             except StepException as e:
                 result = False
                 explain = str(e)
@@ -55,7 +55,7 @@ class Test:
                 if result is False:
                     return output(result, explain)
             else:
-                if not result:
+                if result is False:
                     # failed conditional i.e. not relevant
                     return output(None, explain)
                 else:
@@ -83,11 +83,14 @@ class Step:
     def __str__(self):
         return '{} {}'.format(self.step_type.title(), self.text)
 
-    def __call__(self, activity, **kwargs):
+    def __repr__(self):
+        return '<{} ({})>'.format(self.__class__.__name__,
+                                  self.step_type.title())
+
+    def __call__(self, *args, **kwargs):
         if self.expr_groups:
-            self.expr_fn(activity, *self.expr_groups, **kwargs)
-        else:
-            self.expr_fn(activity, **kwargs)
+            args = [*args, *self.expr_groups]
+        self.expr_fn(*args, **kwargs)
 
 
 class BDDTester:
@@ -105,7 +108,9 @@ class BDDTester:
         else:
             load_source('', filepath)
 
-    def load_feature(self, feature_txt):
+    def load_feature(self, feature_filepath):
+        with open(feature_filepath) as f:
+            feature_txt = f.read()
         return self._gherkinify_feature(feature_txt)
 
     def _gherkinify_feature(self, feature_txt):
