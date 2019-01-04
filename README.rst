@@ -1,6 +1,14 @@
 BDD Tester
 ==========
 
+.. image:: https://img.shields.io/pypi/v/bdd-tester.svg
+    :alt: PyPI Package latest release
+    :target: https://pypi.org/project/bdd-tester/
+
+.. image:: https://img.shields.io/pypi/l/bdd-tester.svg
+    :alt: License
+    :target: https://pypi.org/project/bdd-tester/
+
 .. image:: https://img.shields.io/travis/pwyf/bdd-tester/master.svg
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/pwyf/bdd-tester
