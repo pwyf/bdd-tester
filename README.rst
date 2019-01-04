@@ -1,6 +1,14 @@
 BDD IATI Tester
 ===============
 
+.. image:: https://img.shields.io/travis/pwyf/bdd-tester/master.svg
+    :alt: Travis-CI Build Status
+    :target: https://travis-ci.org/pwyf/bdd-tester
+
+.. image:: https://img.shields.io/coveralls/github/pwyf/bdd-tester/master.svg
+    :alt: Test coverage
+    :target: https://coveralls.io/github/pwyf/bdd-tester?branch=master
+
 Assess IATI data using `behaviour-driven
 development <https://en.wikipedia.org/wiki/Behavior-driven_development>`__
 testing.
