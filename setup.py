@@ -24,7 +24,6 @@ setup(
     license='MIT',
     long_description=readme,
     install_requires=[
-        'lxml',
         'gherkin-official',
         'six',
     ],
