@@ -8,3 +8,12 @@ install:
 script:
   - python setup.py test
 after_success: coveralls
+deploy:
+  provider: pypi
+  distributions: "sdist bdist_wheel --universal"
+  skip_existing: true
+  user: andylolz
+  password:
+    secure: "d5hNTZSpaYMmiJYARLVXDjD2h8SDhsbWzDKl43P7D0MZrZggi6tpqptCVXL0uuTtGuDLvFItXRrwU28Ub5xktZrac+fxRpendfpJalmw5GPGBTA3fm9dtRwVsoJnGF8O/x/yrVnFKzZFO+dm4Ifg0j7gRvh1/7GqIYBdj4l4fhnmfsoW4JCQiwIib3H7rpaSi6/A/o4uRaHxhU4lXZYGnw5MfVx01MtmrSESKZExqIyz8culC8IP+j41cSQiKaROrmJOISDZMuywPNUn4dYW6/NHq83t6rH7a5EnyNKOSA+qtxH/UHTE0ITFejVQBGjh/TL+WkwceASt+I2NWJg+xm0kqBRrb2awVOCuXFWLTiHXQ+rR0Ghzg503wDGRk71Qe7/yIdJ9UnOJjDN9rxztRx6U3C3usu3Vdi2TXDXdCAmpZoJ2WSq7ZkWLwVSrJoT700GoQhLI38PmIlVN+a1gtfJUIDpX9aQRQ5XrjORcTd0bqrtXsbwNPvZIOwDIzABhcKElQhY9X9tXr+OKrm7K9nJnLal2I77ABaENytyNlYMfLKrwnCHDVvOMVsBF4DalShqIx87KvDPnJ/gH0YmoVB20cAF2FAkxuO5k6Ps4veeMzo7+gew9BqZOzTFNUdGcS3soXfYdL65vMcDmUqAsk3HMlY/DeDNJv9e5YufxBpM="
+  on:
+    tags: true
