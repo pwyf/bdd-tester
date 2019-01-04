@@ -15,6 +15,7 @@ extras = {'test': test_deps}
 
 setup(
     name='bdd-tester',
+    description='A very very basic BDD test runner',
     author='Andy Lulham',
     author_email='a.lulham@gmail.com',
     version='0.0.1',
