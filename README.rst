@@ -1,5 +1,5 @@
-BDD IATI Tester
-===============
+BDD Tester
+==========
 
 .. image:: https://img.shields.io/travis/pwyf/bdd-tester/master.svg
     :alt: Travis-CI Build Status
@@ -18,7 +18,7 @@ Wait, what?
 
 It’s a tool to run
 `Gherkin <http://pythonhosted.org/behave/philosophy.html#the-gherkin-language>`__
-tests (features) against IATI data – similar to `Cucumber <https://cucumber.io>`__
+tests (features) against (IATI) data – similar to `Cucumber <https://cucumber.io>`__
 (in Ruby) or `Behave <https://pythonhosted.org/behave/>`__ (in Python).
 `Here’s a blog that nicely explains the idea. <http://blog.memespring.co.uk/2014/07/16/programatically-testing-regulatory-data/>`__
 
@@ -28,7 +28,7 @@ Install
 
 .. code:: shell
 
-    pip install -r requirements.txt
+    pip install bdd_tester
 
 Run
 ---
@@ -51,7 +51,6 @@ Using it programmatically
     from bdd_tester import BDDTester
 
 
-    tester = BDDTester(path_to_step_definitions)
-    feature = tester.load_feature(path_to_feature)
-    result = feature.tests[0](data_to_test)
-
+    tester = BDDTester(step_definitions_filepath)
+    feature = tester.load_feature(feature_filepath)
+    result = feature.tests[0](*args, **kwargs)
