@@ -2,12 +2,13 @@ from gherkin.parser import Parser as GherkinParser
 import six
 
 from .exceptions import StepException, UnknownStepException
-
+from . import utils
 
 if six.PY3:
+    from importlib import reload
     from importlib.machinery import SourceFileLoader
 else:
-    from imp import load_source
+    from imp import load_source, reload
 
 
 class Feature:
@@ -66,11 +67,9 @@ class Test:
 
 
 class Step:
-    mappings = []
-
-    def __init__(self, step_type, step_text):
+    def __init__(self, step_type, step_text, store):
         def _find_matching_expr(line):
-            for regex, fn in self.mappings:
+            for regex, fn in store.values():
                 r = regex.match(line)
                 if r:
                     return fn, r.groups()
@@ -101,14 +100,12 @@ class BDDTester:
         self.gherkinparser = GherkinParser()
 
     def _load_step_definitions(self, filepath):
-        # TODO: This is not right! The mappings array
-        # will be overwritten whenever a new step definitions
-        # file is loaded.
-        Step.mappings = []
+        reload(utils)
         if six.PY3:
             SourceFileLoader('', filepath).load_module()
         else:
             load_source('', filepath)
+        self.store = dict(utils.store)
 
     def load_feature(self, feature_filepath):
         with open(feature_filepath) as f:
@@ -129,6 +126,6 @@ class BDDTester:
             for step in test_steps:
                 if step['keyword'].lower().strip() == 'then':
                     step_type = 'then'
-                steps.append(Step(step_type, step['text']))
+                steps.append(Step(step_type, step['text'], self.store))
             tests.append(Test(test_name, steps, test_tags))
         return Feature(feature_name, tests)

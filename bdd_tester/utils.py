@@ -1,6 +1,7 @@
 import re
 
-from .core import Step
+
+store = {}
 
 
 def given(pattern):
@@ -13,6 +14,6 @@ def then(pattern):
 
 def call(pattern):
     def decorated(fn):
-        Step.mappings.append((re.compile(r'^{}$'.format(pattern)), fn))
+        store[pattern] = ((re.compile(r'^{}$'.format(pattern)), fn))
         return fn
     return decorated
