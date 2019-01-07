@@ -23,9 +23,10 @@ class Feature:
 
 
 class Test:
-    def __init__(self, name, steps):
+    def __init__(self, name, steps, tags):
         self.name = name
         self.steps = steps
+        self.tags = tags
 
     def __str__(self):
         return self.name
@@ -122,11 +123,12 @@ class BDDTester:
         for test in feature['children']:
             test_name = test['name']
             test_steps = test['steps']
+            test_tags = [tag['name'][1:] for tag in test['tags']]
             steps = []
             step_type = 'given'
             for step in test_steps:
                 if step['keyword'].lower().strip() == 'then':
                     step_type = 'then'
                 steps.append(Step(step_type, step['text']))
-            tests.append(Test(test_name, steps))
+            tests.append(Test(test_name, steps, test_tags))
         return Feature(feature_name, tests)
