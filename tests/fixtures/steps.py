@@ -2,7 +2,7 @@ from bdd_tester import given, then, StepException
 
 
 @given(r'text is a shopping list')
-def given_org_file(text, **kwargs):
+def given_shopping_list(text, **kwargs):
     if not text.strip().lower().startswith('shopping list'):
         msg = 'Not a shopping list'
         raise StepException(msg)
