@@ -43,7 +43,7 @@ def test_succeeds():
     feature = tester.load_feature(join(fixture_path, 'feature.feature'))
     success, msg = feature.tests[0](EGGFUL_LIST, bdd_verbose=True)
     assert success is True
-    assert msg == ''
+    assert msg is None
 
     success = feature.tests[0](EGGFUL_LIST)
     assert success is True
@@ -56,7 +56,7 @@ def test_not_relevant():
     feature = tester.load_feature(join(fixture_path, 'feature.feature'))
     success, msg = feature.tests[0](EGG_LETTER, bdd_verbose=True)
     assert success is None
-    assert msg == 'Not a shopping list'
+    assert str(msg) == 'Not a shopping list'
 
 
 def test_fails():
@@ -66,7 +66,7 @@ def test_fails():
     feature = tester.load_feature(join(fixture_path, 'feature.feature'))
     success, msg = feature.tests[0](EGGLESS_LIST, bdd_verbose=True)
     assert success is False
-    assert msg == '"Eggs" not found'
+    assert str(msg) == '"Eggs" not found'
 
 
 def test_missing_step_definition():

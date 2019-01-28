@@ -38,7 +38,7 @@ class Test:
     def loop(self, obj, steps, *args, **kwargs):
         for idx, step in enumerate(steps):
             result = True
-            explain = ''
+            explain = None
             try:
                 obj = step(obj, *args, **kwargs)
                 if step.loop:
@@ -47,10 +47,10 @@ class Test:
                             o, steps[idx + 1:], *args, **kwargs)
                         if not o_result:
                             return o_result, o_explain
-                    return True, ''
+                    return True, None
             except StepException as e:
                 result = False
-                explain = str(e)
+                explain = e
             if step.step_type == 'then':
                 if result is False:
                     return result, explain
@@ -61,7 +61,7 @@ class Test:
                 else:
                     # passed conditional
                     pass
-        return True, ''
+        return True, None
 
     def __call__(self, obj, *args, **kwargs):
         def output(res, msg):
