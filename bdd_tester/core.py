@@ -49,7 +49,7 @@ class Test:
             result = True
             explain = ''
             try:
-                step(*args, **context)
+                args = step(*args, **context)
             except StepException as e:
                 result = False
                 explain = str(e)
@@ -91,7 +91,7 @@ class Step:
     def __call__(self, *args, **kwargs):
         if self.expr_groups:
             args = args + self.expr_groups
-        self.expr_fn(*args, **kwargs)
+        return self.expr_fn(*args, **kwargs)
 
 
 class BDDTester:
