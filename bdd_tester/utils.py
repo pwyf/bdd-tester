@@ -4,16 +4,15 @@ import re
 store = {}
 
 
-def given(pattern):
-    return call(pattern)
+def given(pattern, loop=False):
+    return call(pattern, loop)
 
 
-def then(pattern):
-    return call(pattern)
+def then(pattern, loop=False):
+    return call(pattern, loop)
 
 
-def call(pattern):
+def call(pattern, loop=False):
     def decorated(fn):
-        store[pattern] = ((re.compile(r'^{}$'.format(pattern)), fn))
-        return fn
+        store[pattern] = (re.compile(r'^{}$'.format(pattern)), fn, loop)
     return decorated

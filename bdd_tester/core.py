@@ -35,7 +35,35 @@ class Test:
     def __repr__(self):
         return '<{} ({})>'.format(self.__class__.__name__, str(self))
 
-    def __call__(self, *args, **kwargs):
+    def loop(self, obj, steps, *args, **kwargs):
+        for idx, step in enumerate(steps):
+            result = True
+            explain = ''
+            try:
+                obj = step(obj, *args, **kwargs)
+                if step.loop:
+                    for o in obj:
+                        o_result, o_explain = self.loop(
+                            o, steps[idx + 1:], *args, **kwargs)
+                        if not o_result:
+                            return o_result, o_explain
+                    return True, ''
+            except StepException as e:
+                result = False
+                explain = str(e)
+            if step.step_type == 'then':
+                if result is False:
+                    return result, explain
+            else:
+                if result is False:
+                    # failed conditional i.e. not relevant
+                    return None, explain
+                else:
+                    # passed conditional
+                    pass
+        return True, ''
+
+    def __call__(self, obj, *args, **kwargs):
         def output(res, msg):
             if kwargs.get('bdd_verbose'):
                 return res, msg
@@ -45,41 +73,24 @@ class Test:
         if 'bdd_verbose' in context:
             del context['bdd_verbose']
 
-        for step in self.steps:
-            result = True
-            explain = ''
-            try:
-                args = step(*args, **context)
-            except StepException as e:
-                result = False
-                explain = str(e)
-            if step.step_type == 'then':
-                if result is False:
-                    return output(result, explain)
-            else:
-                if result is False:
-                    # failed conditional i.e. not relevant
-                    return output(None, explain)
-                else:
-                    # passed conditional
-                    pass
-        return output(True, '')
+        res, msg = self.loop(obj, self.steps, *args, **context)
+        return output(res, msg)
 
 
 class Step:
     def __init__(self, step_type, step_text, store):
         def _find_matching_expr(line):
-            for regex, fn in store.values():
+            for regex, fn, loop in store.values():
                 r = regex.match(line)
                 if r:
-                    return fn, r.groups()
+                    return fn, loop, r.groups()
             msg = 'I didn\'t understand "{}"'.format(line)
             raise UnknownStepException(msg)
 
         self.text = step_text
         self.step_type = step_type
-        fn, groups = _find_matching_expr(step_text)
-        self.expr_fn, self.expr_groups = fn, groups
+        match = _find_matching_expr(step_text)
+        self.expr_fn, self.loop, self.expr_groups = match
 
     def __str__(self):
         return '{} {}'.format(self.step_type.title(), self.text)
