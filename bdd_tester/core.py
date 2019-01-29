@@ -37,30 +37,21 @@ class Test:
 
     def loop(self, obj, steps, *args, **kwargs):
         for idx, step in enumerate(steps):
-            result = True
-            explain = None
             try:
                 obj = step(obj, *args, **kwargs)
-                if step.loop:
-                    for o in obj:
-                        o_result, o_explain = self.loop(
-                            o, steps[idx + 1:], *args, **kwargs)
-                        if not o_result:
-                            return o_result, o_explain
-                    return True, None
-            except StepException as e:
-                result = False
-                explain = e
-            if step.step_type == 'then':
-                if result is False:
-                    return result, explain
-            else:
-                if result is False:
+            except StepException as explain:
+                if step.step_type == 'then':
+                    return False, explain
+                else:
                     # failed conditional i.e. not relevant
                     return None, explain
-                else:
-                    # passed conditional
-                    pass
+            if step.loop:
+                for o in obj:
+                    o_result, o_explain = self.loop(
+                        o, steps[idx + 1:], *args, **kwargs)
+                    if not o_result:
+                        return o_result, o_explain
+                return True, None
         return True, None
 
     def __call__(self, obj, *args, **kwargs):
