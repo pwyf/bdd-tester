@@ -15,4 +15,5 @@ def then(pattern, loop=False):
 def call(pattern, loop=False):
     def decorated(fn):
         store[pattern] = (re.compile(r'^{}$'.format(pattern)), fn, loop)
+        return fn  # this isn't needed, but useful for testing
     return decorated
