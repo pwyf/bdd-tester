@@ -18,7 +18,7 @@ setup(
     description='A very very basic BDD test runner',
     author='Andy Lulham',
     author_email='a.lulham@gmail.com',
-    version='0.0.5',
+    version='0.0.6',
     packages=find_packages(),
     scripts=[join('bin', 'bdd_tester')],
     license='MIT',
