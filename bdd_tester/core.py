@@ -87,8 +87,7 @@ class Step:
         return '{} {}'.format(self.step_type.title(), self.text)
 
     def __repr__(self):
-        return '<{} ({})>'.format(self.__class__.__name__,
-                                  self.step_type.title())
+        return '<{} ({})>'.format(self.__class__.__name__, str(self))
 
     def __call__(self, *args, **kwargs):
         if self.expr_groups:
