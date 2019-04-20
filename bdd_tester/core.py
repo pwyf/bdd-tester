@@ -12,9 +12,14 @@ else:
 
 
 class Feature:
-    def __init__(self, name, tests=None):
-        self.name = name
-        self.tests = tests if tests else []
+    def __init__(self, feature_dict, tester):
+        self.tester = tester
+
+        self.name = feature_dict['name']
+        self.tags = [tag['name'][1:] for tag in feature_dict['tags']]
+
+        self.tests = [Test(test_dict, self)
+                      for test_dict in feature_dict['children']]
 
     def __str__(self):
         return self.name
@@ -24,11 +29,18 @@ class Feature:
 
 
 class Test:
-    def __init__(self, name, feature, steps, tags):
-        self.name = name
+    def __init__(self, test_dict, feature):
         self.feature = feature
-        self.steps = steps
-        self.tags = tags
+
+        self.name = test_dict['name']
+        self.tags = [tag['name'][1:] for tag in test_dict['tags']]
+
+        self.steps = []
+        step_type = 'given'
+        for step_dict in test_dict['steps']:
+            if step_dict['keyword'].lower().strip() == 'then':
+                step_type = 'then'
+            self.steps.append(Step(step_dict, step_type, self))
 
     def __str__(self):
         return self.name
@@ -70,18 +82,20 @@ class Test:
 
 
 class Step:
-    def __init__(self, step_type, step_text, store):
+    def __init__(self, step_dict, step_type, test):
         def _find_matching_expr(line):
-            for regex, fn, loop in store.values():
+            for regex, fn, loop in test.feature.tester.store.values():
                 r = regex.match(line)
                 if r:
                     return fn, loop, r.groups()
             msg = 'I didn\'t understand "{}"'.format(line)
             raise UnknownStepException(msg)
 
-        self.text = step_text
+        self.test = test
+
+        self.text = step_dict['text']
         self.step_type = step_type
-        match = _find_matching_expr(step_text)
+        match = _find_matching_expr(self.text)
         self.expr_fn, self.loop, self.expr_groups = match
 
     def __str__(self):
@@ -116,17 +130,4 @@ class BDDTester:
 
     def _gherkinify_feature(self, feature_txt):
         feature_dict = self.gherkinparser.parse(feature_txt)['feature']
-        feature_name = feature_dict['name']
-        feature = Feature(feature_name)
-        for test in feature_dict['children']:
-            test_name = test['name']
-            test_steps = test['steps']
-            test_tags = [tag['name'][1:] for tag in test['tags']]
-            steps = []
-            step_type = 'given'
-            for step in test_steps:
-                if step['keyword'].lower().strip() == 'then':
-                    step_type = 'then'
-                steps.append(Step(step_type, step['text'], self.store))
-            feature.tests.append(Test(test_name, feature, steps, test_tags))
-        return feature
+        return Feature(feature_dict, self)
