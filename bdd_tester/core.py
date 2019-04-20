@@ -12,9 +12,9 @@ else:
 
 
 class Feature:
-    def __init__(self, name, tests):
+    def __init__(self, name, tests=None):
         self.name = name
-        self.tests = tests
+        self.tests = tests if tests else []
 
     def __str__(self):
         return self.name
@@ -24,8 +24,9 @@ class Feature:
 
 
 class Test:
-    def __init__(self, name, steps, tags):
+    def __init__(self, name, feature, steps, tags):
         self.name = name
+        self.feature = feature
         self.steps = steps
         self.tags = tags
 
@@ -114,11 +115,10 @@ class BDDTester:
         return self._gherkinify_feature(feature_txt)
 
     def _gherkinify_feature(self, feature_txt):
-        feature = self.gherkinparser.parse(feature_txt)
-        feature = feature['feature']
-        feature_name = feature['name']
-        tests = []
-        for test in feature['children']:
+        feature_dict = self.gherkinparser.parse(feature_txt)['feature']
+        feature_name = feature_dict['name']
+        feature = Feature(feature_name)
+        for test in feature_dict['children']:
             test_name = test['name']
             test_steps = test['steps']
             test_tags = [tag['name'][1:] for tag in test['tags']]
@@ -128,5 +128,5 @@ class BDDTester:
                 if step['keyword'].lower().strip() == 'then':
                     step_type = 'then'
                 steps.append(Step(step_type, step['text'], self.store))
-            tests.append(Test(test_name, steps, test_tags))
-        return Feature(feature_name, tests)
+            feature.tests.append(Test(test_name, feature, steps, test_tags))
+        return feature
