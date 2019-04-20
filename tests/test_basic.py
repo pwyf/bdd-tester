@@ -83,3 +83,14 @@ def test_feature_repr():
     tester = BDDTester(join(fixture_path, 'steps.py'))
     feature = tester.load_feature(join(fixture_path, 'feature.feature'))
     assert repr(feature) == '<Feature (Shopping list tests)>'
+
+
+def test_tags_present():
+    fixture_path = join(dirname(abspath(__file__)), 'fixtures')
+
+    tester = BDDTester(join(fixture_path, 'steps.py'))
+    feature = tester.load_feature(join(fixture_path, 'feature.feature'))
+    assert feature.tags[0] == 'feature-tag'
+    test = feature.tests[0]
+    assert test.tags[0] == 'test-tag'
+    assert test.feature.tags[0] == 'feature-tag'
